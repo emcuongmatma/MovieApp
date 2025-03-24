@@ -1,0 +1,89 @@
+package com.movieapp.ui.movie_list.composable
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import com.movieapp.R
+import com.movieapp.ui.util.MovieSourceManager
+import com.movieapp.ui.movie_list.MovieListState
+
+@Composable
+fun MovieListScreen(
+    mainState: MovieListState,
+    onItemSelected: (String) -> Unit,
+    onSourceClicked: () -> Unit
+) {
+    val painterSource = when (mainState.movieSource){
+        MovieSourceManager.MovieSource.KKPhim -> R.drawable.movie_background_horizontal
+        MovieSourceManager.MovieSource.NguonC -> R.drawable.logonc
+        else -> R.drawable.logoophim
+    }
+    Image(
+        painter = painterResource(painterSource),
+        contentDescription = null,
+        modifier = Modifier
+            .fillMaxWidth()
+            .statusBarsPadding()
+            .size(60.dp)
+            .clickable {
+                onSourceClicked()
+            },
+        contentScale = ContentScale.Fit
+    )
+    LazyColumn(
+        modifier = Modifier
+            .statusBarsPadding()
+            .padding(top = 70.dp, bottom = 60.dp)
+            .fillMaxWidth()
+            .background(color = Color.Black),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+        item {
+            MovieRow(
+                text = "Phim mới cập nhật",
+                list = mainState.recentlyUpdateList,
+                onClicked = {
+                    onItemSelected(it)
+                })
+        }
+        item {
+            MovieRow(
+                text = "Phim bộ mới",
+                list = mainState.newSeriesList,
+                onClicked = {
+                    onItemSelected(it)
+                })
+        }
+        item {
+            MovieRow(
+                text = "Phim lẻ mới",
+                list = mainState.newStandaloneFilmList,
+                onClicked = {
+                    onItemSelected(it)
+                })
+        }
+        item {
+            MovieRow(
+                text = "TV Shows",
+                list = mainState.newTvShowList,
+                onClicked = {
+                    onItemSelected(it)
+                })
+            Spacer(Modifier.height(20.dp))
+        }
+    }
+}

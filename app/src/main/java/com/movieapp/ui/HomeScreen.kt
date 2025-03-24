@@ -1,0 +1,207 @@
+package com.movieapp.ui
+
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.BottomSheetScaffoldState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.movieapp.R
+import com.movieapp.ui.movie_detail.MovieDetailScreen
+import com.movieapp.ui.movie_detail.MovieDetailViewModel
+import com.movieapp.ui.movie_list.MovieListViewModel
+import com.movieapp.ui.movie_list.composable.MovieListScreen
+import com.movieapp.ui.movie_list.composable.SourceManagerDialog
+import com.movieapp.ui.movie_search.MovieSearchScreen
+import com.movieapp.ui.util.MovieListScreen
+import com.movieapp.ui.util.MovieSearchScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreen(mainViewModel: MovieListViewModel) {
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setStatusBarColor(Color.Transparent, darkIcons = false)
+    }
+    val mainState by mainViewModel.state.collectAsStateWithLifecycle()
+    val movieDetailViewModel: MovieDetailViewModel = hiltViewModel()
+    val bottomSheetState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberStandardBottomSheetState(
+            initialValue = SheetValue.Hidden,
+            skipHiddenState = false
+        )
+    )
+    var isHomeScreen by remember {
+        mutableStateOf(true)
+    }
+    var isSourceManagerOpen by remember {
+        mutableStateOf(false)
+    }
+    val navController = rememberNavController()
+    val scope = rememberCoroutineScope()
+    BottomSheetScaffold(
+        modifier = Modifier.fillMaxSize(),
+        scaffoldState = bottomSheetState,
+        sheetMaxWidth = LocalConfiguration.current.screenWidthDp.dp,
+        sheetSwipeEnabled = false,
+        sheetPeekHeight = 0.dp,
+        sheetDragHandle = null,
+        sheetContent = {
+            BackHandler(
+                enabled = bottomSheetState.bottomSheetState.isVisible
+            ) {
+                onExit(scope, bottomSheetState, movieDetailViewModel)
+            }
+            MovieDetailScreen(
+                viewModel = movieDetailViewModel,
+                onExit = {
+                    onExit(scope, bottomSheetState, movieDetailViewModel)
+                },
+                systemUiController = systemUiController
+            )
+        }
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color.Black),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            NavHost(
+                navController = navController,
+                startDestination = MovieListScreen
+            ) {
+                composable<MovieListScreen> {
+                    MovieListScreen(mainState = mainState,
+                        onItemSelected = {
+                            onItemSelected(scope, bottomSheetState, movieDetailViewModel, it)
+                        },
+                        onSourceClicked = {
+                            isSourceManagerOpen = true
+                        })
+                }
+                composable<MovieSearchScreen> {
+                    MovieSearchScreen(
+                        viewModel = hiltViewModel(),
+                        onItemClicked = {
+                            onItemSelected(scope, bottomSheetState, movieDetailViewModel, it)
+                        }
+                    )
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .background(color = colorResource(R.color.netflix_black))
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .navigationBarsPadding(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                Column(
+                    modifier = Modifier.clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {
+                        isHomeScreen = true
+                        navController.navigate(MovieListScreen)
+                    },
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        Icons.Default.Home,
+                        contentDescription = null,
+                        tint = if (isHomeScreen) Color.White else colorResource(R.color.netflix_gray)
+                    )
+                    Text(
+                        text = "Trang chủ",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = if (isHomeScreen) Color.White else colorResource(R.color.netflix_gray)
+                        )
+                    )
+                }
+                Column(
+                    modifier = Modifier.clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {
+                        isHomeScreen = false
+                        navController.navigate(MovieSearchScreen)
+                    },
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        Icons.Filled.Search,
+                        contentDescription = null,
+                        tint = if (!isHomeScreen) Color.White else colorResource(R.color.netflix_gray)
+                    )
+                    Text(
+                        "Tìm kiếm",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = if (!isHomeScreen) Color.White else colorResource(R.color.netflix_gray)
+                        )
+                    )
+                }
+            }
+        }
+    }
+    if (isSourceManagerOpen) {
+        SourceManagerDialog(
+            onDismissRequest = { isSourceManagerOpen = false },
+            onSource = {
+                mainViewModel.changeSource(it)
+            }
+        )
+    }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+fun onExit(scope: CoroutineScope, bottomSheetState: BottomSheetScaffoldState, movieDetailViewModel: MovieDetailViewModel){
+    scope.launch {
+        bottomSheetState.bottomSheetState.hide()
+        movieDetailViewModel.pausePlayer()
+    }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+fun onItemSelected(scope: CoroutineScope, bottomSheetState: BottomSheetScaffoldState, movieDetailViewModel: MovieDetailViewModel,it:String){
+    movieDetailViewModel.getMovieDetail(it)
+    scope.launch {
+        bottomSheetState.bottomSheetState.expand()
+    }
+}
