@@ -3,10 +3,10 @@
     <style name="Theme.MovieApp" parent="android:Theme.Material.Light.NoActionBar">
         <!-- Set the splash screen background, animated icon, and animation
 duration. -->
-        <item name="android:windowSplashScreenBackground">#212121</item>
-        <!-- Use windowSplashScreenAnimatedIcon to add a drawable or an animated
-             drawable. One of these is required. -->
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/app_icon</item>
+<!--        <item name="android:windowSplashScreenBackground">#212121</item>-->
+<!--        &lt;!&ndash; Use windowSplashScreenAnimatedIcon to add a drawable or an animated-->
+<!--             drawable. One of these is required. &ndash;&gt;-->
+<!--        <item name="android:windowSplashScreenAnimatedIcon">@drawable/app_icon</item>-->
         <!-- Required for animated icons. -->
         <item name="windowSplashScreenAnimationDuration">200</item>
         <!-- Set the theme of the Activity that directly follows your splash
