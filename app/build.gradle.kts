@@ -45,7 +45,7 @@ android {
 dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.material3)
-    //EXOPlayer
+    //ExoPlayer
     implementation(libs.compose.video)
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.exoplayer.dash)
@@ -53,15 +53,10 @@ dependencies {
     implementation(libs.androidx.media3.exoplayer.hls)
     //sandwich
     implementation(libs.sandwich)
-    implementation(libs.sandwich.retrofit)
     implementation(libs.sandwich.ktor)
     //lifecycle
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose.android)
-    //retrofit
-    implementation(libs.converter.gson)
-    //noinspection UseTomlInstead
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
     //ktor
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
@@ -80,13 +75,6 @@ dependencies {
     //systemuicontroller
     implementation(libs.accompanist.systemuicontroller)
 
-//    // For instrumentation tests
-//    androidTestImplementation "com.google.dagger:hilt-android-testing:2.46.1"
-//    kaptAndroidTest "com.google.dagger:hilt-android-compiler:2.46.1"
-//
-//    // For local unit tests
-//    testImplementation 'com.google.dagger:hilt-android-testing:2.46.1'
-//    kaptTest 'com.google.dagger:hilt-compiler:2.46.1'
     //navi
     implementation(libs.androidx.navigation.compose)
     implementation(libs.jetbrains.kotlinx.serialization.json)
