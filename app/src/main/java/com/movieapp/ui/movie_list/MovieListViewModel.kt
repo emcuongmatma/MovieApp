@@ -33,8 +33,8 @@ class MovieListViewModel @Inject constructor(
     private var fetch4: Job? = null
 
     init {
-        observeMovieSource()
         _state.update { it.copy(isLoading = true) }
+        observeMovieSource()
     }
 
     private fun observeMovieSource() {
@@ -59,7 +59,7 @@ class MovieListViewModel @Inject constructor(
         fetch3 = getCustomMovie("phim-le"){ data->
             _state.value = _state.value.copy(newStandaloneFilmList = data.items!!.converter())}
         fetch4 = getCustomMovie("tv-shows"){ data->
-            _state.value = _state.value.copy(newTvShowList = data.items!!.converter())}
+            _state.value = _state.value.copy(newTvShowList = data.items!!.converter(), isLoading = false)}
     }
     private fun clearList() {
         _state.update {
