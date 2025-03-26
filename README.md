@@ -10,12 +10,10 @@ Movie Streaming android app built with Jetpack Compose, Hilt, Coroutines, Flow, 
 
 
 <p align="center">
-  <img width="30%" height="50%" src="" />
- <img width="30%" height="50%" src="" />
-  <img width="30%" height="50%" src="" />
-  <img width="30%" height="50%" src="" />
-  <img width="30%" height="50%" src="" />
-  <img width="30%" height="50%" src="" />
+  <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_20250326_074230.png" />
+ <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_20250326_074318.png" />
+  <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_20250326_074353.png" />
+  <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_20250326_074455.png" />
 </p>
 
 <p align="center" width="100%">
@@ -39,7 +37,7 @@ Movie Streaming android app built with Jetpack Compose, Hilt, Coroutines, Flow, 
   - Repository pattern
 
 <p align="center">
-  <img width="72%" height="722%" src="mvvm.png" />
+<!-- -  <img width="72%" height="722%" src="mvvm.png" /> -->
 </p>
 <p align="center">
 <b>Fig.  MVVM (Model - ComposableView - ViewModel) design pattern.</b>
