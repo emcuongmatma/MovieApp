@@ -34,14 +34,6 @@ Movie Streaming android app built with Jetpack Compose, Hilt, Coroutines, Flow, 
 <!-- - Network connection state with SnackBar -->
 ## Architecture 
   - MVVM Architecture (Model - ComposableView - ViewModel)
-  - Repository pattern
-
-<p align="center">
-<!-- -  <img width="72%" height="722%" src="mvvm.png" /> -->
-</p>
-<p align="center">
-<b>Fig.  MVVM (Model - ComposableView - ViewModel) design pattern.</b>
-</p>
 
 ## Built With 
 - [Kotlin](https://kotlinlang.org/) - First class and official programming language for Android development.
