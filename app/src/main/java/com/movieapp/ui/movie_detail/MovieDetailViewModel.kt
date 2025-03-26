@@ -15,6 +15,7 @@ import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onFailure
 import com.skydoves.sandwich.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -44,11 +45,11 @@ class MovieDetailViewModel @OptIn(UnstableApi::class)
         playFirstEp(0)
     }
     private fun playFirstEp(server:Int) {
-        player.replaceMediaItem(0,videoItems[server][0])
+        player.setMediaItem(videoItems[server][0])
         player.play()
     }
     private fun playVideo(server:Int, ep:String) {
-        player.replaceMediaItem(0, videoItems[server].find { it.mediaId == ep }!!)
+        player.setMediaItem(videoItems[server].find { it.mediaId == ep }!!)
         player.play()
     }
     fun getMovieDetail(slug:String) {
@@ -62,7 +63,6 @@ class MovieDetailViewModel @OptIn(UnstableApi::class)
                             serverSelected = 0
                         )
                     }
-                    loadListVideo()
                 }
                 .onError {
                     _state.update {
@@ -75,6 +75,8 @@ class MovieDetailViewModel @OptIn(UnstableApi::class)
                 .onFailure {
                     Log.e("log", this.message())
                 }
+            delay(100) // for bottom bar animation
+            loadListVideo()
         }
     }
     fun pausePlayer(){
