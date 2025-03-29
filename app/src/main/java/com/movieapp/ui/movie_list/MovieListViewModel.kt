@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.movieapp.domain.model.custom.CustomMovieModel
 import com.movieapp.domain.model.custom.DataModel
 import com.movieapp.domain.repository.ApiRepository
+import com.movieapp.ui.util.LoadStatus
 import com.movieapp.ui.util.MovieSourceManager
 import com.skydoves.sandwich.message
 import com.skydoves.sandwich.onError
@@ -33,7 +34,7 @@ class MovieListViewModel @Inject constructor(
     private var fetch4: Job? = null
 
     init {
-        _state.update { it.copy(isLoading = true) }
+        _state.update { it.copy(status = LoadStatus.Loading()) }
         observeMovieSource()
     }
 
@@ -59,7 +60,7 @@ class MovieListViewModel @Inject constructor(
         fetch3 = getCustomMovie("phim-le"){ data->
             _state.value = _state.value.copy(newStandaloneFilmList = data.items!!.converter())}
         fetch4 = getCustomMovie("tv-shows"){ data->
-            _state.value = _state.value.copy(newTvShowList = data.items!!.converter(), isLoading = false)}
+            _state.value = _state.value.copy(newTvShowList = data.items!!.converter(), status = LoadStatus.Success())}
     }
     private fun clearList() {
         _state.update {
@@ -84,7 +85,7 @@ class MovieListViewModel @Inject constructor(
                 .onError {
                     _state.update {
                         it.copy(
-                            error = this.payload.toString()
+                            status = LoadStatus.Error(this.payload.toString())
                         )
                     }
                 }
@@ -103,7 +104,7 @@ class MovieListViewModel @Inject constructor(
                 .onError {
                     _state.update {
                         it.copy(
-                            error = this.payload.toString()
+                            status = LoadStatus.Error(this.payload.toString())
                         )
                     }
                 }

@@ -10,6 +10,7 @@ import androidx.media3.common.MimeTypes
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.movieapp.domain.repository.ApiRepository
+import com.movieapp.ui.util.LoadStatus
 import com.skydoves.sandwich.message
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onFailure
@@ -41,7 +42,7 @@ class MovieDetailViewModel @OptIn(UnstableApi::class)
                 MediaItem.Builder().setUri(ep.linkM3u8).setTag(ep.name).setMediaId(ep.name!!).setMimeType(MimeTypes.APPLICATION_M3U8).build()
             }
         }.toMutableStateList()
-        _state.value = _state.value.copy(isLoading = false, epSelected = videoItems[0].first().mediaId)
+        _state.value = _state.value.copy(status = LoadStatus.Success(), epSelected = videoItems[0].first().mediaId)
         playFirstEp(0)
     }
     private fun playFirstEp(server:Int) {
@@ -58,7 +59,7 @@ class MovieDetailViewModel @OptIn(UnstableApi::class)
                 .onSuccess {
                     _state.update {
                         it.copy(
-                            isLoading = true,
+                            status = LoadStatus.Loading(),
                             movie = data,
                             serverSelected = 0
                         )
@@ -67,15 +68,14 @@ class MovieDetailViewModel @OptIn(UnstableApi::class)
                 .onError {
                     _state.update {
                         it.copy(
-                            isLoading = false,
-                            error = this.payload.toString()
+                            status = LoadStatus.Error(this.payload.toString())
                         )
                     }
                 }
                 .onFailure {
                     Log.e("log", this.message())
                 }
-            delay(100) // for bottom bar animation
+            delay(200) // for bottom bar animation
             loadListVideo()
         }
     }
@@ -83,7 +83,7 @@ class MovieDetailViewModel @OptIn(UnstableApi::class)
         player.pause()
         _state.update {
             it.copy(
-                isLoading = true,
+                status = LoadStatus.Init(),
                 serverSelected = 0
             )
         }

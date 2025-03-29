@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.movieapp.domain.model.custom.CustomMovieModel
 import com.movieapp.domain.repository.ApiRepository
+import com.movieapp.ui.util.LoadStatus
 import com.movieapp.ui.util.MovieSourceManager
 import com.skydoves.sandwich.message
 import com.skydoves.sandwich.onError
@@ -32,9 +33,8 @@ class MovieSearchViewModel @Inject constructor(
             apiRepository.getMovieDetailByName(_state.value.searchKey)
                 .onSuccess {
                     _state.update {
-                        Log.e("13", data.data!!.items!!.toString())
                         it.copy(
-                            isLoading = false,
+                            status = LoadStatus.Success(),
                             movieSearchList = data.data!!.items!!.converter()
                         )
                     }
@@ -42,8 +42,7 @@ class MovieSearchViewModel @Inject constructor(
                 .onError {
                     _state.update {
                         it.copy(
-                            isLoading = false,
-                            error = this.payload.toString()
+                            status = LoadStatus.Error(this.payload.toString())
                         )
                     }
                 }
@@ -56,7 +55,7 @@ class MovieSearchViewModel @Inject constructor(
         _state.update {
             it.copy(
                 searchKey = key,
-                isLoading = true
+                status = LoadStatus.Loading()
             )
         }
         job?.cancel()
