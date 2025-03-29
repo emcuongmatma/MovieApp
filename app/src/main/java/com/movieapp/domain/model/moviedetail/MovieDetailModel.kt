@@ -41,7 +41,6 @@ data class MovieDetailModel(
     @SerialName("year")
     val year: Int? = 0
 )
-
 fun List<String>.toActorString(): String {
     var string = "Cast:"
     for (i in this.indices) {

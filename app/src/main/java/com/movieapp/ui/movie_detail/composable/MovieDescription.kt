@@ -26,13 +26,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.movieapp.R
 import com.movieapp.domain.model.moviedetail.toActorString
 import com.movieapp.ui.movie_detail.MovieDetailState
+import com.movieapp.ui.theme.netflix_black
+import com.movieapp.ui.theme.netflix_red
+import com.movieapp.ui.theme.netflix_white_15
+import com.movieapp.ui.theme.netflix_white_30
 
 @Composable
 fun MovieDetails(
@@ -69,7 +71,7 @@ fun MovieDetails(
                 modifier = Modifier
                     .background(color = Color.Transparent)
                     .size(30.dp, 30.dp)
-                    .border(width = 1.dp, shape = RectangleShape, color = colorResource(R.color.netflix_white_30)),
+                    .border(width = 1.dp, shape = RectangleShape, color = netflix_white_30),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -83,12 +85,12 @@ fun MovieDetails(
             )
             Box(
                 modifier = Modifier
-                    .background(color = colorResource(R.color.netflix_white_15)),
+                    .background(color = netflix_white_15),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = state.movie.movie.episodeCurrent.toString(),
-                    style = MaterialTheme.typography.bodyMedium.copy(color = colorResource(R.color.netflix_red)),
+                    style = MaterialTheme.typography.bodyMedium.copy(color = netflix_red),
                     maxLines = 1
                 )
             }
@@ -110,7 +112,7 @@ fun MovieDetails(
         )
         Text(
             text = state.movie.movie.actor.toActorString(),
-            style = MaterialTheme.typography.bodySmall.copy(color = colorResource(R.color.netflix_black )),
+            style = MaterialTheme.typography.bodySmall.copy(color = netflix_black),
             maxLines = 1,
             overflow = TextOverflow.Clip
         )

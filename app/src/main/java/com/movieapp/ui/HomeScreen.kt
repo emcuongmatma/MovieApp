@@ -38,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -46,13 +45,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.movieapp.R
 import com.movieapp.ui.movie_detail.MovieDetailScreen
 import com.movieapp.ui.movie_detail.MovieDetailViewModel
 import com.movieapp.ui.movie_list.MovieListViewModel
 import com.movieapp.ui.movie_list.composable.MovieListScreen
 import com.movieapp.ui.movie_list.composable.SourceManagerDialog
 import com.movieapp.ui.movie_search.MovieSearchScreen
+import com.movieapp.ui.theme.netflix_black
+import com.movieapp.ui.theme.netflix_gray
 import com.movieapp.ui.util.MovieListScreen
 import com.movieapp.ui.util.MovieSearchScreen
 import kotlinx.coroutines.CoroutineScope
@@ -135,7 +135,7 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(60.dp)
-                    .background(color = colorResource(R.color.netflix_black))
+                    .background(netflix_black)
                     .padding(horizontal = 16.dp, vertical = 8.dp)
                     .clip(RoundedCornerShape(24.dp))
                     .navigationBarsPadding(),
@@ -151,12 +151,12 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
                     Icon(
                         Icons.Default.Home,
                         contentDescription = null,
-                        tint = if (isHomeScreen) Color.White else colorResource(R.color.netflix_gray)
+                        tint = if (isHomeScreen) Color.White else netflix_gray
                     )
                     Text(
                         text = "Trang chủ",
                         style = MaterialTheme.typography.bodyMedium.copy(
-                            color = if (isHomeScreen) Color.White else colorResource(R.color.netflix_gray)
+                            color = if (isHomeScreen) Color.White else netflix_gray
                         )
                     )
                 }
@@ -170,12 +170,12 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
                     Icon(
                         Icons.Filled.Search,
                         contentDescription = null,
-                        tint = if (!isHomeScreen) Color.White else colorResource(R.color.netflix_gray)
+                        tint = if (!isHomeScreen) Color.White else netflix_gray
                     )
                     Text(
                         "Tìm kiếm",
                         style = MaterialTheme.typography.bodyMedium.copy(
-                            color = if (!isHomeScreen) Color.White else colorResource(R.color.netflix_gray)
+                            color = if (!isHomeScreen) Color.White else netflix_gray
                         )
                     )
                 }

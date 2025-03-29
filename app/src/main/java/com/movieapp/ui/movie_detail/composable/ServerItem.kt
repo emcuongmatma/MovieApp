@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.movieapp.ui.theme.netflix_red
 
 @Composable
 fun ServerItem(name: String, index: Int, serverSelected: Int, onItemSelected: (Int) -> Unit) {
@@ -19,7 +20,7 @@ fun ServerItem(name: String, index: Int, serverSelected: Int, onItemSelected: (I
         Text(
             text = name,
             style = MaterialTheme.typography.titleSmall,
-            color = if (index == serverSelected) Color(229, 9, 19) else Color.White
+            color = if (index == serverSelected) netflix_red else Color.White
         )
     }
 }

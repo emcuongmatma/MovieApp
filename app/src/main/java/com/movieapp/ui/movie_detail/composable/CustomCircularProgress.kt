@@ -8,8 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
-import com.movieapp.R
+import com.movieapp.ui.theme.netflix_red2
 
 @Composable
 fun CustomCircularProgress(modifier: Modifier = Modifier) {
@@ -20,7 +19,7 @@ fun CustomCircularProgress(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
-            color = colorResource(R.color.netflix_red2)
+            color = netflix_red2
         )
     }
 }

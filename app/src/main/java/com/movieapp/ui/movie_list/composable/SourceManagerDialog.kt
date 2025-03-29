@@ -15,12 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.movieapp.R
+import com.movieapp.ui.theme.netflix_black
 
 @Composable
 fun SourceManagerDialog(onDismissRequest: () -> Unit, onSource: (Int) -> Unit) {
@@ -30,7 +30,7 @@ fun SourceManagerDialog(onDismissRequest: () -> Unit, onSource: (Int) -> Unit) {
         }
     ) {
         Column(
-            modifier = Modifier.background(colorResource(R.color.netflix_black), shape = RoundedCornerShape(10.dp)).fillMaxWidth(),
+            modifier = Modifier.background(color = netflix_black, shape = RoundedCornerShape(10.dp)).fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(

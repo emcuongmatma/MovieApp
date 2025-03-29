@@ -14,12 +14,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import com.google.accompanist.systemuicontroller.SystemUiController
-import com.movieapp.R
 import com.movieapp.ui.movie_detail.composable.CustomCircularProgress
 import com.movieapp.ui.movie_detail.composable.MovieDetails
 import com.movieapp.ui.movie_detail.videoplayer.VideoPlayerTest
+import com.movieapp.ui.util.LoadStatus
 
 @Composable
 fun MovieDetailScreen(
@@ -33,9 +32,9 @@ fun MovieDetailScreen(
     }
     val modifierCol =
         if (state.isFullScreen) Modifier
-            .background(colorResource(R.color.netflix_black))
+            .background(Color.Black)
             .fillMaxSize() else Modifier
-            .background(colorResource(R.color.netflix_black))
+            .background(Color.Black)
             .fillMaxSize()
             .statusBarsPadding()
     val modifierVideoPlayer = if (state.isFullScreen) Modifier.fillMaxSize() else Modifier
@@ -45,27 +44,33 @@ fun MovieDetailScreen(
         modifier = modifierCol,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (!state.isLoading) {
-            Box(
-                modifier = modifierVideoPlayer.background(
-                    Color.Black
-                )
-            ) {
-                VideoPlayerTest(
-                    modifier = modifierVideoPlayer,
-                    viewModel = viewModel,
-                    onExit = onExit
-                )
+        when (state.status) {
+            is LoadStatus.Loading -> {
+                CustomCircularProgress()
             }
-            MovieDetails(
-                state,
-                onSeverSelected = { viewModel.onServerChange(it) },
-                onEpSelected = { viewModel.onEpChange(it) })
-        } else {
-            CustomCircularProgress()
+
+            is LoadStatus.Success -> {
+                Box(
+                    modifier = modifierVideoPlayer.background(
+                        Color.Black
+                    )
+                ) {
+                    VideoPlayerTest(
+                        modifier = modifierVideoPlayer,
+                        viewModel = viewModel,
+                        onExit = onExit
+                    )
+                }
+                MovieDetails(
+                    state,
+                    onSeverSelected = { viewModel.onServerChange(it) },
+                    onEpSelected = { viewModel.onEpChange(it) })
+            }
+
+            else -> {}
+
         }
     }
-
-
 }
+
 

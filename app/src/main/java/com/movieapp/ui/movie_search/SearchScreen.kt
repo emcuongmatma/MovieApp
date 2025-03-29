@@ -27,13 +27,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.movieapp.R
 import com.movieapp.ui.movie_detail.composable.CustomCircularProgress
 import com.movieapp.ui.movie_list.composable.MovieItem
+import com.movieapp.ui.theme.netflix_gray_2
+import com.movieapp.ui.theme.searchbar_background
+import com.movieapp.ui.util.LoadStatus
+
 
 @Composable
 fun MovieSearchScreen(
@@ -68,12 +70,12 @@ fun MovieSearchScreen(
                     Icon(
                         Icons.Default.Search,
                         contentDescription = null,
-                        tint = colorResource(R.color.netflix_gray_2)
+                        tint = netflix_gray_2
                     )
                 },
                 colors = TextFieldDefaults.colors().copy(
-                    focusedContainerColor = colorResource(R.color.searchbar_background),
-                    unfocusedContainerColor = colorResource(R.color.searchbar_background),
+                    focusedContainerColor = searchbar_background,
+                    unfocusedContainerColor = searchbar_background,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 ),
@@ -88,7 +90,7 @@ fun MovieSearchScreen(
 
             )
         }
-        if (state.isLoading) CustomCircularProgress()
+        if (state.status is LoadStatus.Loading) CustomCircularProgress()
         else {
             LazyVerticalGrid(
                 modifier = Modifier
