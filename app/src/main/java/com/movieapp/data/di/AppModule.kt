@@ -1,15 +1,11 @@
 package com.movieapp.data.di
 
-import android.app.Application
-import androidx.media3.exoplayer.ExoPlayer
 import com.movieapp.data.reppository.ApiRepositoryImpl
 import com.movieapp.domain.repository.ApiRepository
 import com.movieapp.ui.util.MovieSourceManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
-import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
@@ -46,16 +42,4 @@ object AppModule {
     @Singleton
     fun provideApiRepository(httpClient: HttpClient,movieSourceManager: MovieSourceManager):ApiRepository = ApiRepositoryImpl(httpClient,
         movieSourceManager)
-    @Provides
-    @Singleton
-    fun provideSourceManager(): MovieSourceManager = MovieSourceManager()
-}
-@Module
-@InstallIn(ViewModelComponent::class)
-object VideoPlayerModule{
-    @ViewModelScoped
-    @Provides
-    fun provideExoPlayer(app: Application): ExoPlayer {
-        return  ExoPlayer.Builder(app).build()
-    }
 }
