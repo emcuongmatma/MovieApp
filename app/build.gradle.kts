@@ -48,7 +48,6 @@ dependencies {
     //ExoPlayer
     implementation(libs.compose.video)
     implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.androidx.media3.exoplayer.dash)
     implementation(libs.androidx.media3.ui)
     implementation(libs.androidx.media3.exoplayer.hls)
     //sandwich
@@ -77,6 +76,7 @@ dependencies {
 
     //navi
     implementation(libs.androidx.navigation.compose)
+
     implementation(libs.jetbrains.kotlinx.serialization.json)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
