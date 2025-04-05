@@ -9,8 +9,6 @@ import kotlinx.serialization.Serializable
 data class RecentlyUpdateMovieResponseModel(
     @SerialName("items")
     val items: List<CustomMovieModel>? = listOf(),
-    @SerialName("status")
-    val status: Boolean? = false,
     @SerialName("pathImage")
     val pathImage: String? = ""
 )

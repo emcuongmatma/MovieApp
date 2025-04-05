@@ -1,13 +1,11 @@
-package com.movieapp.domain.model.moviedetail
+package com.movieapp.domain.model.custom
 
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CountryModel(
-    @SerialName("id")
-    val id: String? = "",
+data class CategoryModel(
     @SerialName("name")
     val name: String? = "",
     @SerialName("slug")

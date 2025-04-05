@@ -1,18 +1,15 @@
 package com.movieapp.domain.model.custom
 
 
-import com.movieapp.domain.model.recentlyupdate.ModifiedModel
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class CustomMovieModel(
+    @SerialName("casts")
+    val casts: String? = "",
     @SerialName("episode_current")
     val episodeCurrent: String? = "",
-    @SerialName("_id")
-    val id: String? = "",
-    @SerialName("modified")
-    val modified: ModifiedModel? = ModifiedModel(),
     @SerialName("name")
     val name: String? = "",
     @SerialName("origin_name")
@@ -30,5 +27,7 @@ data class CustomMovieModel(
     @SerialName("type")
     val type: String? = "",
     @SerialName("year")
-    val year: Int? = 0
+    val year: Int? = 0,
+    @SerialName("category")
+    val category: List<CategoryModel>? = listOf()
 )

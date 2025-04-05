@@ -8,8 +8,6 @@ import kotlinx.serialization.Serializable
 data class CustomMovieResponseModel(
     @SerialName("data")
     val `data`: DataModel? = DataModel(),
-    @SerialName("msg")
-    val msg: String? = "",
-    @SerialName("status")
-    val status: String? = ""
+    @SerialName("items")
+    val items: List<CustomMovieModel>? = listOf()
 )

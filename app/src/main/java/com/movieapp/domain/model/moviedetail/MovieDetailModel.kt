@@ -1,6 +1,7 @@
 package com.movieapp.domain.model.moviedetail
 
 
+import com.movieapp.domain.model.custom.CategoryModel
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -8,20 +9,18 @@ import kotlinx.serialization.Serializable
 data class MovieDetailModel(
     @SerialName("actor")
     val actor: List<String> = listOf(),
+    @SerialName("director")
+    val director:List<String> = listOf(),
+    //nguonc
+    @SerialName("casts")
+    val casts: String? = "",
+    //nguonc
     @SerialName("content")
     val content: String? = "",
-    @SerialName("country")
-    val country: List<CountryModel>? = listOf(),
-    @SerialName("created")
-    val created: CreatedModel? = CreatedModel(),
     @SerialName("episode_current")
     val episodeCurrent: String? = "",
-    @SerialName("episode_total")
-    val episodeTotal: String? = "",
-    @SerialName("_id")
-    val id: String? = "",
     @SerialName("name")
-    val name: String? = "",
+    val name: String? = "null",
     @SerialName("origin_name")
     val originName: String? = "",
     @SerialName("poster_url")
@@ -34,21 +33,10 @@ data class MovieDetailModel(
     val thumbUrl: String? = "",
     @SerialName("time")
     val time: String? = "",
-    @SerialName("trailer_url")
-    val trailerUrl: String? = "",
     @SerialName("type")
     val type: String? = "",
     @SerialName("year")
-    val year: Int? = 0
+    val year: Int? = 0,
+    @SerialName("category")
+    val category: List<CategoryModel>? = listOf()
 )
-fun List<String>.toActorString(): String {
-    var string = "Cast:"
-    for (i in this.indices) {
-        string = if (i == 0) {
-            "$string ${this[i]}"
-        } else{
-            "$string,${this[i]}"
-        }
-    }
-    return string
-}
