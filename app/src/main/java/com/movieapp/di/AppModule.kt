@@ -1,4 +1,4 @@
-package com.movieapp.data.di
+package com.movieapp.di
 
 import com.movieapp.data.reppository.ApiRepositoryImpl
 import com.movieapp.domain.repository.ApiRepository

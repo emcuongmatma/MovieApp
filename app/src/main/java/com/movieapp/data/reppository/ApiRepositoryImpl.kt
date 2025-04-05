@@ -1,5 +1,6 @@
 package com.movieapp.data.reppository
 
+import com.movieapp.domain.model.nCModel.NCMovieDetailResponeModel
 import com.movieapp.domain.model.recentlyupdate.RecentlyUpdateMovieResponseModel
 import com.movieapp.domain.model.custom.CustomMovieResponseModel
 import com.movieapp.domain.model.moviedetail.MovieDetailResponseModel
@@ -18,9 +19,11 @@ class ApiRepositoryImpl(
     override suspend fun getMovieDetail(name:String): ApiResponse<MovieDetailResponseModel> =
         httpClient.getApiResponse(urlString = movieSourceManager.currentSource.value.GET_DETAIL_URL+ name)
 
+    override suspend fun getMovieDetailNC(name: String): ApiResponse<NCMovieDetailResponeModel> =
+        httpClient.getApiResponse(urlString = movieSourceManager.currentSource.value.GET_DETAIL_URL+ name)
+
     override suspend fun getCustomMovie(type:String): ApiResponse<CustomMovieResponseModel> =
         httpClient.getApiResponse(urlString = movieSourceManager.currentSource.value.GET_CUSTOM_HEAD + type + movieSourceManager.currentSource.value.GET_CUSTOM_TAIL)
-
     override suspend fun getMovieDetailByName(name: String): ApiResponse<CustomMovieResponseModel> =
         httpClient.getApiResponse(urlString = movieSourceManager.currentSource.value.SEARCH_HEAD + name + movieSourceManager.currentSource.value.SEARCH_TAIL)
 }
