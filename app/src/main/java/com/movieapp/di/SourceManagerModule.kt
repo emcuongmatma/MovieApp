@@ -1,4 +1,4 @@
-package com.movieapp.data.di
+package com.movieapp.di
 
 import com.movieapp.ui.util.MovieSourceManager
 import dagger.Module

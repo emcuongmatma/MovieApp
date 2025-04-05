@@ -1,4 +1,4 @@
-package com.movieapp.data.di
+package com.movieapp.di
 
 import android.app.Application
 import androidx.media3.exoplayer.ExoPlayer
