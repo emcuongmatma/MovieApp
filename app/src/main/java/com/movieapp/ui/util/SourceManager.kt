@@ -33,7 +33,7 @@ class MovieSourceManager {
         }
         data object NguonC : MovieSource() {
             override val BASE_URL = "https://phim.nguonc.com/api/"
-            override val ADD_RECENTLY_URL = "films/phim-moi-cap-nhat?page=&limit=10"
+            override val ADD_RECENTLY_URL = "films/danh-sach/phim-dang-chieu?page=1&limit=10"
             override val GET_DETAIL_URL = "film/"
             override val GET_CUSTOM_HEAD = "films/danh-sach/"
             override val GET_CUSTOM_TAIL = "?page=1&sort_field=_id&sort_type=asc&year=2025&limit=10"
