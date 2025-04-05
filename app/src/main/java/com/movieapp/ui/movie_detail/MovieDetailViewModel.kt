@@ -1,16 +1,18 @@
 package com.movieapp.ui.movie_detail
 
-import android.util.Log
-import androidx.annotation.OptIn
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
-import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import com.movieapp.domain.model.moviedetail.MovieDetailModel
+import com.movieapp.domain.model.moviedetail.MovieDetailResponseModel
+import com.movieapp.domain.model.nCModel.toMovieDetailResponseModel
 import com.movieapp.domain.repository.ApiRepository
 import com.movieapp.ui.util.LoadStatus
+import com.movieapp.ui.util.MovieSourceManager
+import com.skydoves.sandwich.ApiResponse
 import com.skydoves.sandwich.message
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onFailure
@@ -23,78 +25,103 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
-class MovieDetailViewModel @OptIn(UnstableApi::class)
+class MovieDetailViewModel
 @Inject constructor(
     private val apiRepository: ApiRepository,
-    val player: ExoPlayer
+    val player: ExoPlayer,
+    private val movieSourceManager: MovieSourceManager
 ) : ViewModel() {
     private val _state = MutableStateFlow(MovieDetailState())
     val state = _state.asStateFlow()
-    private lateinit var videoItems:MutableList<List<MediaItem>>
+    private lateinit var videoItems: MutableList<List<MediaItem>>
+
     init {
-        player.playWhenReady = true
         player.prepare()
+        player.playWhenReady = true
     }
-    private fun loadListVideo(){
-        videoItems = _state.value.movie.episodes.map { servers->
-            servers.serverData.map { ep->
-                MediaItem.Builder().setUri(ep.linkM3u8).setTag(ep.name).setMediaId(ep.name!!).setMimeType(MimeTypes.APPLICATION_M3U8).build()
+    private fun loadListVideo() {
+        videoItems = _state.value.movie.episodes!!.map { servers ->
+            servers.serverData.map { ep ->
+                MediaItem.Builder().setUri(ep.linkM3u8).setTag(ep.name).setMediaId(ep.name!!)
+                    .setMimeType(MimeTypes.APPLICATION_M3U8).build()
             }
         }.toMutableStateList()
-        _state.value = _state.value.copy(status = LoadStatus.Success(), epSelected = videoItems[0].first().mediaId)
+        _state.value = _state.value.copy(
+            epSelected = videoItems[0].first().mediaId
+        )
         playFirstEp(0)
     }
-    private fun playFirstEp(server:Int) {
+    private fun playFirstEp(server: Int) {
         player.setMediaItem(videoItems[server][0])
         player.play()
     }
-    private fun playVideo(server:Int, ep:String) {
+    private fun playVideo(server: Int, ep: String) {
         player.setMediaItem(videoItems[server].find { it.mediaId == ep }!!)
         player.play()
     }
-    fun getMovieDetail(slug:String) {
+    fun getMovieDetail() {
+        _state.update {
+            it.copy(
+                status = LoadStatus.Loading()
+            )
+        }
         viewModelScope.launch {
-            apiRepository.getMovieDetail(slug)
-                .onSuccess {
-                    _state.update {
-                        it.copy(
-                            status = LoadStatus.Loading(),
-                            movie = data,
-                            serverSelected = 0
-                        )
+             val result = if (movieSourceManager.currentSource.value is MovieSourceManager.MovieSource.NguonC) {
+                apiRepository.getMovieDetailNC(_state.value.slug)
+                    .onSuccess {
+                        _state.update {
+                            it.copy(
+                                status = LoadStatus.Success(),
+                                movie = data.toMovieDetailResponseModel(),
+                                serverSelected = 0
+                            )
+                        }
                     }
-                }
-                .onError {
-                    _state.update {
-                        it.copy(
-                            status = LoadStatus.Error(this.payload.toString())
-                        )
+            } else {
+                apiRepository.getMovieDetail(_state.value.slug)
+                    .onSuccess {
+                        _state.update {
+                            it.copy(
+                                status = LoadStatus.Success(),
+                                movie = data,
+                                serverSelected = 0
+                            )
+                        }
                     }
+            }
+            result.onError {
+                setToast(this.payload.toString())
                 }
                 .onFailure {
-                    Log.e("log", this.message())
+                    setToast(this.message())
                 }
-            delay(200) // for bottom bar animation
-            loadListVideo()
+            if (result is ApiResponse.Success){
+                delay(200) // for bottom bar animation
+                loadListVideo()
+            }
         }
     }
-    fun pausePlayer(){
+
+    fun pausePlayer() {
         player.pause()
         _state.update {
             it.copy(
                 status = LoadStatus.Init(),
-                serverSelected = 0
+                movie = MovieDetailResponseModel(null, MovieDetailModel()),
+                serverSelected = 0,
+                slug = ""
             )
         }
     }
-    fun onEpChange(name:String) {
+    fun onEpChange(name: String) {
         _state.update {
             it.copy(
                 epSelected = name
             )
         }
-        playVideo(_state.value.serverSelected,name)
+        playVideo(_state.value.serverSelected, name)
     }
     fun onServerChange(int: Int) {
         _state.update {
@@ -105,10 +132,31 @@ class MovieDetailViewModel @OptIn(UnstableApi::class)
         }
         playFirstEp(int)
     }
+    fun setToast(err:String){
+        _state.update {
+            it.copy(
+                status = LoadStatus.Error(err)
+            )
+        }
+    }
+    fun reset(){
+        _state.update {
+            it.copy(
+                status = LoadStatus.Init()
+            )
+        }
+    }
     fun isFullScreen(boolean: Boolean) {
         _state.update {
             it.copy(
                 isFullScreen = boolean
+            )
+        }
+    }
+    fun setSlug(slug:String){
+        _state.update {
+            it.copy(
+                slug = slug
             )
         }
     }

@@ -1,12 +1,11 @@
 package com.movieapp.ui.movie_search
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.movieapp.domain.model.custom.CustomMovieModel
 import com.movieapp.domain.repository.ApiRepository
 import com.movieapp.ui.util.LoadStatus
 import com.movieapp.ui.util.MovieSourceManager
+import com.movieapp.ui.util.toListMovie
 import com.skydoves.sandwich.message
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onFailure
@@ -32,25 +31,21 @@ class MovieSearchViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             apiRepository.getMovieDetailByName(_state.value.searchKey)
                 .onSuccess {
+                    val data = data.toListMovie(movieSourceManager)
                     _state.update {
                         it.copy(
-                            status = LoadStatus.Success(),
-                            movieSearchList = data.data!!.items!!.converter()
+                            movieSearchList = data,
+                            status = LoadStatus.Success()
                         )
                     }
                 }
                 .onError {
-                    _state.update {
-                        it.copy(
-                            status = LoadStatus.Error(this.payload.toString())
-                        )
-                    }
+                    setToast(this.payload.toString())
                 }
                 .onFailure {
-                    Log.e("log", this.message())
+                    setToast(this.message())
                 }
         }
-
     fun updateSearchKey(key: String) {
         _state.update {
             it.copy(
@@ -61,22 +56,11 @@ class MovieSearchViewModel @Inject constructor(
         job?.cancel()
         job = getMovieDetailByName()
     }
-    private fun List<CustomMovieModel>.converter(): List<CustomMovieModel> {
-        val list: List<CustomMovieModel> = when (movieSourceManager.currentSource.value) {
-            is MovieSourceManager.MovieSource.KKPhim -> {
-                this.map { item ->
-                    item.copy(posterUrl = if (!item.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + item.posterUrl else item.posterUrl)
-                }
-            }
-            is MovieSourceManager.MovieSource.Ophim -> {
-                this.map { item ->
-                    item.copy(posterUrl = if (!item.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + item.thumbUrl else item.thumbUrl)
-                }
-            }
-            is MovieSourceManager.MovieSource.NguonC -> {
-                return this
-            }
+    fun setToast(err:String){
+        _state.update {
+            it.copy(
+                status = LoadStatus.Error(err)
+            )
         }
-        return list
     }
 }

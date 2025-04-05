@@ -1,13 +1,14 @@
 package com.movieapp.ui.movie_list
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.movieapp.domain.model.custom.CustomMovieModel
-import com.movieapp.domain.model.custom.DataModel
+import com.movieapp.domain.model.custom.CustomMovieResponseModel
 import com.movieapp.domain.repository.ApiRepository
 import com.movieapp.ui.util.LoadStatus
 import com.movieapp.ui.util.MovieSourceManager
+import com.movieapp.ui.util.converter
+import com.movieapp.ui.util.filter
+import com.movieapp.ui.util.toListMovie
 import com.skydoves.sandwich.message
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onFailure
@@ -44,7 +45,7 @@ class MovieListViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     movieSource = newSource
                 )
-            fetchAllMovies()
+                fetchAllMovies()
             }
         }
     }
@@ -54,14 +55,24 @@ class MovieListViewModel @Inject constructor(
         fetch3?.cancel()
         fetch4?.cancel()
         fetch1 = getRecentlyUpdate()
-        fetch2 = getCustomMovie("phim-bo"){ data->
-            _state.value = _state.value.copy(newSeriesList = data.items!!.converter())
+        fetch2 = getCustomMovie("phim-bo") { data ->
+            _state.value = _state.value.copy(
+                newSeriesList = data.toListMovie(movieSourceManager)
+            )
         }
-        fetch3 = getCustomMovie("phim-le"){ data->
-            _state.value = _state.value.copy(newStandaloneFilmList = data.items!!.converter())}
-        fetch4 = getCustomMovie("tv-shows"){ data->
-            _state.value = _state.value.copy(newTvShowList = data.items!!.converter(), status = LoadStatus.Success())}
+        fetch3 = getCustomMovie("phim-le") { data ->
+            _state.value = _state.value.copy(
+                newStandaloneFilmList = data.toListMovie(movieSourceManager)
+            )
+        }
+        fetch4 = getCustomMovie("tv-shows") { data ->
+            _state.value = _state.value.copy(
+                newTvShowList = data.toListMovie(movieSourceManager),
+                status = LoadStatus.Success()
+            )
+        }
     }
+
     private fun clearList() {
         _state.update {
             it.copy(
@@ -72,48 +83,40 @@ class MovieListViewModel @Inject constructor(
             )
         }
     }
+
     private fun getRecentlyUpdate() =
         viewModelScope.launch(Dispatchers.IO) {
             apiRepository.getRecentlyUpdateMovie()
                 .onSuccess {
                     _state.update {
                         it.copy(
-                            recentlyUpdateList = data.items.orEmpty().converter()
+                            recentlyUpdateList = data.items.orEmpty().filter()
+                                .converter(movieSourceManager)
                         )
                     }
                 }
                 .onError {
-                    _state.update {
-                        it.copy(
-                            status = LoadStatus.Error(this.payload.toString())
-                        )
-                    }
+                    setToast(this.payload.toString())
                 }
                 .onFailure {
-                    Log.e("log", this.message())
+                    setToast(this.message())
                 }
         }
 
 
-    private fun getCustomMovie(type: String,onUpdate:(DataModel)->Unit) =
+    private fun getCustomMovie(type: String, onUpdate: (CustomMovieResponseModel) -> Unit) =
         viewModelScope.launch(Dispatchers.IO) {
             apiRepository.getCustomMovie(type)
                 .onSuccess {
-                    onUpdate(data.data!!)
+                    onUpdate(data)
                 }
                 .onError {
-                    _state.update {
-                        it.copy(
-                            status = LoadStatus.Error(this.payload.toString())
-                        )
-                    }
+                    setToast(this.payload.toString())
                 }
                 .onFailure {
-                    Log.e("log", this.message())
+                    setToast(this.message())
                 }
         }
-
-
     fun changeSource(index: Int) {
         when (index) {
             0 -> {
@@ -130,24 +133,18 @@ class MovieListViewModel @Inject constructor(
         }
         clearList()
     }
-    private fun List<CustomMovieModel>.converter(): List<CustomMovieModel> {
-        val list: List<CustomMovieModel> = when (movieSourceManager.currentSource.value) {
-            is MovieSourceManager.MovieSource.KKPhim -> {
-                this.map { item ->
-                    item.copy(posterUrl = if (!item.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + item.posterUrl else item.posterUrl)
-                }
-            }
-
-            is MovieSourceManager.MovieSource.Ophim -> {
-                this.map { item ->
-                    item.copy(posterUrl = if (!item.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + item.thumbUrl else item.thumbUrl)
-                }
-            }
-
-            is MovieSourceManager.MovieSource.NguonC -> {
-                return this
-            }
+    fun setToast(err:String){
+        _state.update {
+            it.copy(
+                status = LoadStatus.Error(err)
+            )
         }
-        return list
+    }
+    fun reset(){
+        _state.update {
+            it.copy(
+                status = LoadStatus.Init()
+            )
+        }
     }
 }

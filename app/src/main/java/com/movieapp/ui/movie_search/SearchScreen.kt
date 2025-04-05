@@ -18,6 +18,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -90,24 +92,36 @@ fun MovieSearchScreen(
 
             )
         }
-        if (state.status is LoadStatus.Loading) CustomCircularProgress()
-        else {
-            LazyVerticalGrid(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 70.dp, start = 5.dp, end = 5.dp),
-                columns = GridCells.Adaptive(minSize = 110.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                items(items = state.movieSearchList) {
-                    MovieItem(
-                        movie = it
-                    ) { slug ->
-                        onItemClicked(slug)
-                        focusManager.clearFocus()
+        when (state.status) {
+            is LoadStatus.Init -> {
+                Text(
+                    "Nhập từ khoá để tìm kiếm phim",
+                    style = MaterialTheme.typography.titleMedium.copy(netflix_gray_2)
+                )
+            }
+            is LoadStatus.Loading -> {
+                CustomCircularProgress()
+            }
+            is LoadStatus.Success -> {
+                LazyVerticalGrid(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 70.dp, start = 5.dp, end = 5.dp),
+                    columns = GridCells.Adaptive(minSize = 110.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    items(items = state.movieSearchList) {
+                        MovieItem(
+                            movie = it
+                        ) { slug ->
+                            onItemClicked(slug)
+                            focusManager.clearFocus()
+                        }
                     }
                 }
+            }
+            is LoadStatus.Error -> {
             }
         }
     }

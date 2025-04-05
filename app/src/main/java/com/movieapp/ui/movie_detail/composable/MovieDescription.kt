@@ -29,16 +29,15 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.movieapp.domain.model.moviedetail.toActorString
 import com.movieapp.ui.movie_detail.MovieDetailState
-import com.movieapp.ui.theme.netflix_black
+import com.movieapp.ui.theme.netflix_gray
 import com.movieapp.ui.theme.netflix_red
 import com.movieapp.ui.theme.netflix_white_15
 import com.movieapp.ui.theme.netflix_white_30
 
 @Composable
 fun MovieDetails(
-    state: MovieDetailState?,
+    state: MovieDetailState,
     onSeverSelected: (Int) -> Unit,
     onEpSelected: (String) -> Unit
 ) {
@@ -54,7 +53,7 @@ fun MovieDetails(
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         Text(
-            text = state?.movie?.movie!!.name.toString(),
+            text = state.movie.movie?.name.toString(),
             style = MaterialTheme.typography.titleLarge.copy(color = Color.White),
             fontWeight = FontWeight.Bold
         )
@@ -64,7 +63,7 @@ fun MovieDetails(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = state.movie.movie.year.toString(),
+                text = state.movie.movie?.year.toString(),
                 style = MaterialTheme.typography.bodyMedium.copy(color = Color.White)
             )
             Box(
@@ -75,12 +74,12 @@ fun MovieDetails(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = state.movie.movie.quality.toString(),
+                    text = state.movie.movie?.quality.toString(),
                     style = MaterialTheme.typography.bodySmall.copy(color = Color.White)
                 )
             }
             Text(
-                text = state.movie.movie.time.toString(),
+                text = state.movie.movie?.time.toString(),
                 style = MaterialTheme.typography.bodyMedium.copy(color = Color.White)
             )
             Box(
@@ -89,20 +88,14 @@ fun MovieDetails(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = state.movie.movie.episodeCurrent.toString(),
+                    text = state.movie.movie?.episodeCurrent.toString(),
                     style = MaterialTheme.typography.bodyMedium.copy(color = netflix_red),
                     maxLines = 1
                 )
             }
-            Text(
-                text = state.movie.movie.country!!.first().name.toString(),
-                style = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
-                maxLines = 1,
-                overflow = TextOverflow.Visible
-            )
         }
         Text(
-            text = state.movie.movie.content.toString(),
+            text = state.movie.movie?.content.toString(),
             style = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
             maxLines = if (!isShowFull) 3 else 10,
             overflow = TextOverflow.Clip,
@@ -111,10 +104,16 @@ fun MovieDetails(
             }
         )
         Text(
-            text = state.movie.movie.actor.toActorString(),
-            style = MaterialTheme.typography.bodySmall.copy(color = netflix_black),
-            maxLines = 1,
-            overflow = TextOverflow.Clip
+            text =  "Cast: "+ if (state.movie.movie?.casts!!.isNotEmpty()) state.movie.movie.casts else state.movie.movie.actor.joinToString(", "),
+            style = MaterialTheme.typography.bodySmall.copy(color = netflix_gray),
+            maxLines = 2,
+            overflow = TextOverflow.Visible
+        )
+        Text(
+            text =  "Director: " + state.movie.movie.director.joinToString(", "),
+            style = MaterialTheme.typography.bodySmall.copy(color = netflix_gray),
+            maxLines = 2,
+            overflow = TextOverflow.Visible
         )
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -125,30 +124,32 @@ fun MovieDetails(
                 style = MaterialTheme.typography.titleLarge.copy(color = Color.White),
                 fontWeight = FontWeight.Bold
             )
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(15.dp)) {
-                for (i in state.movie.episodes.indices) {
-                    ServerItem(
-                        name = state.movie.episodes[i].serverName!!,
-                        index = i,
-                        serverSelected = state.serverSelected
-                    ) {
-                        onSeverSelected(it)
+            state.movie.episodes?.let {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(15.dp)) {
+                    for (i in state.movie.episodes.indices) {
+                        ServerItem(
+                            name = state.movie.episodes[i].serverName!!,
+                            index = i,
+                            serverSelected = state.serverSelected
+                        ) {
+                            onSeverSelected(it)
+                        }
                     }
                 }
-            }
-            LazyVerticalGrid(
-                modifier = Modifier.fillMaxWidth(),
-                columns = GridCells.Fixed(9),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                state = gridState
-            ) {
-                items(items = state.movie.episodes[state.serverSelected].serverData) { item ->
-                    EpItem(
-                        ep = item.name!!,
-                        epSelected = state.epSelected
-                    ) {
-                        onEpSelected(item.name)
+                LazyVerticalGrid(
+                    modifier = Modifier.fillMaxWidth(),
+                    columns = GridCells.Fixed(9),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    state = gridState
+                ) {
+                    items(items = state.movie.episodes[state.serverSelected].serverData) { item ->
+                        EpItem(
+                            ep = item.name!!,
+                            epSelected = state.epSelected
+                        ) {
+                            onEpSelected(item.name)
+                        }
                     }
                 }
             }

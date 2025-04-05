@@ -1,5 +1,6 @@
 package com.movieapp.ui
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,8 +53,10 @@ import com.movieapp.ui.movie_list.MovieListViewModel
 import com.movieapp.ui.movie_list.composable.MovieListScreen
 import com.movieapp.ui.movie_list.composable.SourceManagerDialog
 import com.movieapp.ui.movie_search.MovieSearchScreen
+import com.movieapp.ui.movie_search.MovieSearchViewModel
 import com.movieapp.ui.theme.netflix_black
 import com.movieapp.ui.theme.netflix_gray
+import com.movieapp.ui.util.LoadStatus
 import com.movieapp.ui.util.MovieListScreen
 import com.movieapp.ui.util.MovieSearchScreen
 import kotlinx.coroutines.CoroutineScope
@@ -67,6 +71,7 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
     }
     val mainState by mainViewModel.state.collectAsStateWithLifecycle()
     val movieDetailViewModel: MovieDetailViewModel = hiltViewModel()
+    val movieSearchViewModel: MovieSearchViewModel = hiltViewModel()
     val bottomSheetState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberStandardBottomSheetState(
             initialValue = SheetValue.Hidden,
@@ -124,7 +129,7 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
                 }
                 composable<MovieSearchScreen> {
                     MovieSearchScreen(
-                        viewModel = hiltViewModel(),
+                        viewModel = movieSearchViewModel,
                         onItemClicked = {
                             onItemSelected(scope, bottomSheetState, movieDetailViewModel, it)
                         }
@@ -182,6 +187,10 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
             }
         }
     }
+    if (mainState.status is LoadStatus.Error){
+        Toast.makeText(LocalContext.current,"Lỗi kết nối !", Toast.LENGTH_SHORT).show()
+        mainViewModel.reset()
+    }
     if (isSourceManagerOpen) {
         SourceManagerDialog(
             onDismissRequest = { isSourceManagerOpen = false },
@@ -200,7 +209,8 @@ fun onExit(scope: CoroutineScope, bottomSheetState: BottomSheetScaffoldState, mo
 }
 @OptIn(ExperimentalMaterial3Api::class)
 fun onItemSelected(scope: CoroutineScope, bottomSheetState: BottomSheetScaffoldState, movieDetailViewModel: MovieDetailViewModel,it:String){
-    movieDetailViewModel.getMovieDetail(it)
+    movieDetailViewModel.setSlug(it)
+    movieDetailViewModel.getMovieDetail()
     scope.launch {
         bottomSheetState.bottomSheetState.expand()
     }
