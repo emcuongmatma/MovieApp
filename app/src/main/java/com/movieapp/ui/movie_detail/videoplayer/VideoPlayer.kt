@@ -35,7 +35,7 @@ import com.movieapp.ui.movie_detail.MovieDetailViewModel
 
 @OptIn(UnstableApi::class)
 @Composable
-fun VideoPlayerTest(
+fun VideoPlayer(
     modifier: Modifier = Modifier,
     viewModel: MovieDetailViewModel,
     onExit: () -> Unit
@@ -43,15 +43,11 @@ fun VideoPlayerTest(
     var lifecycle by remember {
         mutableStateOf(Lifecycle.Event.ON_CREATE)
     }
-    var isControllerVisible by remember {
-        mutableStateOf(false)
-    }
     val configuration = LocalConfiguration.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     val activity = context as? Activity
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
     LaunchedEffect(isLandscape) {
         viewModel.isFullScreen(isLandscape)
     }
@@ -68,9 +64,7 @@ fun VideoPlayerTest(
     BackHandler(
         enabled = isLandscape
     ) {
-        if (activity != null) {
-            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-        }
+            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
     }
     Box(
         modifier = modifier.background(Color.Black)
@@ -81,20 +75,19 @@ fun VideoPlayerTest(
                     it.player = viewModel.player
                     it.keepScreenOn = true
                     it.resizeMode =
-                         AspectRatioFrameLayout.RESIZE_MODE_FIT
+                        AspectRatioFrameLayout.RESIZE_MODE_FIT
                     it.setControllerAnimationEnabled(true)
                     it.setFullscreenButtonState(isLandscape)
                     it.setFullscreenButtonClickListener {
                         activity?.requestedOrientation = if (isLandscape) {
-                            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+                            ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT
                         } else {
-                            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                            ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
                         }
                     }
-                    isControllerVisible = it.isControllerFullyVisible
                     it.setShowNextButton(false)
                     it.setShowPreviousButton(false)
-
+                    it.controllerShowTimeoutMs = 3000
                 }
             },
             update = {
@@ -116,8 +109,6 @@ fun VideoPlayerTest(
         if (!isLandscape) {
             IconButton(
                 onClick = {
-                    activity?.requestedOrientation =
-                        ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
                     onExit()
                 },
                 modifier = Modifier
@@ -132,6 +123,4 @@ fun VideoPlayerTest(
             }
         }
     }
-
-
 }

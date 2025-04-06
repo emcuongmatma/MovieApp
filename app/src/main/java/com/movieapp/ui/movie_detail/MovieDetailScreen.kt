@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.movieapp.ui.movie_detail.composable.CustomCircularProgress
 import com.movieapp.ui.movie_detail.composable.MovieDetails
-import com.movieapp.ui.movie_detail.videoplayer.VideoPlayerTest
+import com.movieapp.ui.movie_detail.videoplayer.VideoPlayer
 import com.movieapp.ui.theme.netflix_red
 import com.movieapp.ui.theme.netflix_red2
 import com.movieapp.ui.theme.netflix_white_15
@@ -69,7 +69,7 @@ fun MovieDetailScreen(
                         Color.Black
                     )
                 ) {
-                    VideoPlayerTest(
+                    VideoPlayer(
                         modifier = modifierVideoPlayer,
                         viewModel = viewModel,
                         onExit = onExit
