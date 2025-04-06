@@ -6,6 +6,7 @@ import com.movieapp.domain.model.custom.CustomMovieResponseModel
 import com.movieapp.domain.repository.ApiRepository
 import com.movieapp.ui.util.LoadStatus
 import com.movieapp.ui.util.MovieSourceManager
+import com.movieapp.ui.util.Screen
 import com.movieapp.ui.util.converter
 import com.movieapp.ui.util.filter
 import com.movieapp.ui.util.toListMovie
@@ -33,12 +34,10 @@ class MovieListViewModel @Inject constructor(
     private var fetch2: Job? = null
     private var fetch3: Job? = null
     private var fetch4: Job? = null
-
     init {
         _state.update { it.copy(status = LoadStatus.Loading()) }
         observeMovieSource()
     }
-
     private fun observeMovieSource() {
         viewModelScope.launch {
             movieSourceManager.currentSource.collect { newSource ->
@@ -72,7 +71,6 @@ class MovieListViewModel @Inject constructor(
             )
         }
     }
-
     private fun clearList() {
         _state.update {
             it.copy(
@@ -83,7 +81,6 @@ class MovieListViewModel @Inject constructor(
             )
         }
     }
-
     private fun getRecentlyUpdate() =
         viewModelScope.launch(Dispatchers.IO) {
             apiRepository.getRecentlyUpdateMovie()
@@ -137,6 +134,16 @@ class MovieListViewModel @Inject constructor(
         _state.update {
             it.copy(
                 status = LoadStatus.Error(err)
+            )
+        }
+    }
+    fun setScreen(screen: Screen){
+        _state.update { it.copy(screen=screen) }
+    }
+    fun setSourceManagerOpen(boolean: Boolean){
+        _state.update {
+            it.copy(
+                isSourceManagerOpen = boolean
             )
         }
     }

@@ -30,10 +30,8 @@ import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,9 +41,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.movieapp.ui.movie_detail.MovieDetailScreen
 import com.movieapp.ui.movie_detail.MovieDetailViewModel
@@ -57,8 +52,7 @@ import com.movieapp.ui.movie_search.MovieSearchViewModel
 import com.movieapp.ui.theme.netflix_black
 import com.movieapp.ui.theme.netflix_gray
 import com.movieapp.ui.util.LoadStatus
-import com.movieapp.ui.util.MovieListScreen
-import com.movieapp.ui.util.MovieSearchScreen
+import com.movieapp.ui.util.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -78,13 +72,6 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
             skipHiddenState = false
         )
     )
-    var isHomeScreen by remember {
-        mutableStateOf(true)
-    }
-    var isSourceManagerOpen by remember {
-        mutableStateOf(false)
-    }
-    val navController = rememberNavController()
     val scope = rememberCoroutineScope()
     BottomSheetScaffold(
         modifier = Modifier.fillMaxSize(),
@@ -114,20 +101,17 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
                 .background(color = Color.Black),
             contentAlignment = Alignment.BottomCenter
         ) {
-            NavHost(
-                navController = navController,
-                startDestination = MovieListScreen
-            ) {
-                composable<MovieListScreen> {
+            when(mainState.screen){
+                Screen.HomeScreen ->{
                     MovieListScreen(mainState = mainState,
                         onItemSelected = {
                             onItemSelected(scope, bottomSheetState, movieDetailViewModel, it)
                         },
                         onSourceClicked = {
-                            isSourceManagerOpen = true
+                            mainViewModel.setSourceManagerOpen(true)
                         })
                 }
-                composable<MovieSearchScreen> {
+                Screen.SearchScreen ->{
                     MovieSearchScreen(
                         viewModel = movieSearchViewModel,
                         onItemClicked = {
@@ -148,39 +132,37 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
             ) {
                 Column(
                     modifier = Modifier.clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {
-                        isHomeScreen = true
-                        navController.navigate(MovieListScreen)
+                        mainViewModel.setScreen(Screen.HomeScreen)
                     },
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
                         Icons.Default.Home,
                         contentDescription = null,
-                        tint = if (isHomeScreen) Color.White else netflix_gray
+                        tint = if (mainState.screen is Screen.HomeScreen) Color.White else netflix_gray
                     )
                     Text(
                         text = "Trang chủ",
                         style = MaterialTheme.typography.bodyMedium.copy(
-                            color = if (isHomeScreen) Color.White else netflix_gray
+                            color = if (mainState.screen is Screen.HomeScreen) Color.White else netflix_gray
                         )
                     )
                 }
                 Column(
                     modifier = Modifier.clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {
-                        isHomeScreen = false
-                        navController.navigate(MovieSearchScreen)
+                        mainViewModel.setScreen(Screen.SearchScreen)
                     },
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
                         Icons.Filled.Search,
                         contentDescription = null,
-                        tint = if (!isHomeScreen) Color.White else netflix_gray
+                        tint = if (mainState.screen is Screen.SearchScreen) Color.White else netflix_gray
                     )
                     Text(
                         "Tìm kiếm",
                         style = MaterialTheme.typography.bodyMedium.copy(
-                            color = if (!isHomeScreen) Color.White else netflix_gray
+                            color = if (mainState.screen is Screen.SearchScreen) Color.White else netflix_gray
                         )
                     )
                 }
@@ -191,9 +173,9 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
         Toast.makeText(LocalContext.current,"Lỗi kết nối !", Toast.LENGTH_SHORT).show()
         mainViewModel.reset()
     }
-    if (isSourceManagerOpen) {
+    if (mainState.isSourceManagerOpen) {
         SourceManagerDialog(
-            onDismissRequest = { isSourceManagerOpen = false },
+            onDismissRequest = {  mainViewModel.setSourceManagerOpen(false) },
             onSource = {
                 mainViewModel.changeSource(it)
             }

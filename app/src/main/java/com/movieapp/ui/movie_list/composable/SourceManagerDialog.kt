@@ -3,6 +3,7 @@ package com.movieapp.ui.movie_list.composable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,7 +47,7 @@ fun SourceManagerDialog(onDismissRequest: () -> Unit, onSource: (Int) -> Unit) {
                 modifier = Modifier
                     .size(180.dp)
                     .fillMaxWidth()
-                    .clickable {
+                    .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {
                         onSource(0)
                         onDismissRequest()
                     },
@@ -57,7 +59,7 @@ fun SourceManagerDialog(onDismissRequest: () -> Unit, onSource: (Int) -> Unit) {
                 modifier = Modifier
                     .size(180.dp)
                     .fillMaxWidth()
-                    .clickable {
+                    .clickable (indication = null, interactionSource = remember { MutableInteractionSource() }){
                         onSource(1)
                         onDismissRequest()
                     },
@@ -69,7 +71,7 @@ fun SourceManagerDialog(onDismissRequest: () -> Unit, onSource: (Int) -> Unit) {
                 modifier = Modifier
                     .size(180.dp)
                     .fillMaxWidth()
-                    .clickable {
+                    .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {
 //                        onSource(2)
 //                        onDismissRequest()
                     },
