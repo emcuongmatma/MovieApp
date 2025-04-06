@@ -95,10 +95,10 @@ fun MovieDetails(
             }
         }
         Text(
-            text = state.movie.movie?.content.toString(),
+            text = state.movie.movie?.content.toString().replaceFirstChar {  if (it.isLowerCase()) it.titlecase() else it.toString() },
             style = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
-            maxLines = if (!isShowFull) 3 else 10,
-            overflow = TextOverflow.Clip,
+            maxLines = if (!isShowFull) 3 else Int.MAX_VALUE,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.clickable {
                 isShowFull = !isShowFull
             }
@@ -107,13 +107,13 @@ fun MovieDetails(
             text =  "Cast: "+ if (state.movie.movie?.casts!!.isNotEmpty()) state.movie.movie.casts else state.movie.movie.actor.joinToString(", "),
             style = MaterialTheme.typography.bodySmall.copy(color = netflix_gray),
             maxLines = 2,
-            overflow = TextOverflow.Visible
+            overflow = TextOverflow.Ellipsis
         )
         Text(
             text =  "Director: " + state.movie.movie.director.joinToString(", "),
             style = MaterialTheme.typography.bodySmall.copy(color = netflix_gray),
             maxLines = 2,
-            overflow = TextOverflow.Visible
+            overflow = TextOverflow.Ellipsis
         )
         Column(
             modifier = Modifier.fillMaxWidth(),
