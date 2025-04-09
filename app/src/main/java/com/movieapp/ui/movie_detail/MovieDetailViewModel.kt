@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.movieapp.domain.model.moviedetail.MovieDetailModel
 import com.movieapp.domain.model.moviedetail.MovieDetailResponseModel
@@ -36,10 +37,14 @@ class MovieDetailViewModel
     private val _state = MutableStateFlow(MovieDetailState())
     val state = _state.asStateFlow()
     private lateinit var videoItems: MutableList<List<MediaItem>>
-
     init {
         player.prepare()
         player.playWhenReady = true
+        player.addListener(object : Player.Listener {
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                _state.value = _state.value.copy(isPlaying = isPlaying)
+            }
+        })
     }
     private fun loadListVideo() {
         videoItems = _state.value.movie.episodes!!.map { servers ->
@@ -62,11 +67,7 @@ class MovieDetailViewModel
         player.play()
     }
     fun getMovieDetail() {
-        _state.update {
-            it.copy(
-                status = LoadStatus.Loading()
-            )
-        }
+        _state.update { it.copy(status = LoadStatus.Loading()) }
         viewModelScope.launch {
              val result = if (movieSourceManager.currentSource.value is MovieSourceManager.MovieSource.NguonC) {
                 apiRepository.getMovieDetailNC(_state.value.slug)
@@ -98,12 +99,11 @@ class MovieDetailViewModel
                     setToast(this.message())
                 }
             if (result is ApiResponse.Success){
-                delay(200) // for bottom bar animation
+                delay(350) // for bottom bar animation
                 loadListVideo()
             }
         }
     }
-
     fun pausePlayer() {
         player.pause()
         _state.update {

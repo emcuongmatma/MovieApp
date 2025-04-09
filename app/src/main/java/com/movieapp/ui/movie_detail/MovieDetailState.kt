@@ -9,5 +9,6 @@ data class MovieDetailState (
     val epSelected:String="",
     val status: LoadStatus = LoadStatus.Loading(),
     val slug:String="",
-    val isFullScreen:Boolean = false
+    val isFullScreen:Boolean = false,
+    val isPlaying: Boolean = false
 )

@@ -18,7 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -26,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.systemuicontroller.SystemUiController
 import com.movieapp.ui.movie_detail.composable.CustomCircularProgress
 import com.movieapp.ui.movie_detail.composable.MovieDetails
 import com.movieapp.ui.movie_detail.videoplayer.VideoPlayer
@@ -38,13 +36,9 @@ import com.movieapp.ui.util.LoadStatus
 @Composable
 fun MovieDetailScreen(
     viewModel: MovieDetailViewModel,
-    onExit: () -> Unit,
-    systemUiController: SystemUiController
+    onExit: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    LaunchedEffect(state.isFullScreen) {
-        systemUiController.isStatusBarVisible = !state.isFullScreen
-    }
     val modifierCol =
         if (state.isFullScreen) Modifier
             .background(Color.Black)
