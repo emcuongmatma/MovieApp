@@ -27,14 +27,18 @@ import com.movieapp.ui.movie_list.MovieListState
 fun MovieListScreen(
     mainState: MovieListState,
     onItemSelected: (String) -> Unit,
-    onSourceClicked: () -> Unit
+    onSourceClicked: () -> Unit,
+    onMoreClicked:(String)->Unit
 ) {
     val painterSource = when (mainState.movieSource){
         MovieSourceManager.MovieSource.KKPhim -> R.drawable.movie_background_horizontal
         MovieSourceManager.MovieSource.NguonC -> R.drawable.logonc
         else -> R.drawable.logoophim
     }
-    Column (modifier = Modifier.fillMaxSize().background(color = Color.Black).statusBarsPadding()){
+    Column (modifier = Modifier
+        .fillMaxSize()
+        .background(color = Color.Black)
+        .statusBarsPadding()){
         Image(
             painter = painterResource(painterSource),
             contentDescription = null,
@@ -49,7 +53,7 @@ fun MovieListScreen(
         LazyColumn(
             modifier = Modifier
                 .statusBarsPadding()
-                .padding(top=10.dp,bottom = 60.dp)
+                .padding(top = 10.dp, bottom = 60.dp)
                 .fillMaxWidth()
                 .background(color = Color.Black),
             verticalArrangement = Arrangement.spacedBy(20.dp)
@@ -58,33 +62,37 @@ fun MovieListScreen(
                 MovieRow(
                     text = "Phim mới cập nhật",
                     list = mainState.recentlyUpdateList,
-                    onClicked = {
+                    onItemClicked = {
                         onItemSelected(it)
-                    })
+                    },
+                    onMoreClicked = { onMoreClicked("phim-moi-cap-nhat") })
             }
             item {
                 MovieRow(
                     text = "Phim bộ mới",
                     list = mainState.newSeriesList,
-                    onClicked = {
+                    onItemClicked = {
                         onItemSelected(it)
-                    })
+                    },
+                    onMoreClicked = { onMoreClicked("phim-bo") })
             }
             item {
                 MovieRow(
                     text = "Phim lẻ mới",
                     list = mainState.newStandaloneFilmList,
-                    onClicked = {
+                    onItemClicked = {
                         onItemSelected(it)
-                    })
+                    },
+                    onMoreClicked = { onMoreClicked("phim-le") })
             }
             item {
                 MovieRow(
                     text = "TV Shows",
                     list = mainState.newTvShowList,
-                    onClicked = {
+                    onItemClicked = {
                         onItemSelected(it)
-                    })
+                    },
+                    onMoreClicked = { onMoreClicked("tv-shows") })
                 Spacer(Modifier.height(20.dp))
             }
         }

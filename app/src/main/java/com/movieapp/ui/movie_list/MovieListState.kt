@@ -14,7 +14,13 @@ data class MovieListState(
     val newTvShowList:List<CustomMovieModel> = emptyList(),
     var movieSource: MovieSourceManager.MovieSource = MovieSourceManager.MovieSource.KKPhim,
     val movieSelected:MovieDetailResponseModel = MovieDetailResponseModel(),
+    val typeSlug:String="",
+    val currentPageR:Int=1,
+    val currentPageS:Int=1,
+    val currentPageF:Int=1,
+    val currentPageT:Int=1,
     val status : LoadStatus = LoadStatus.Init(),
     val screen: Screen = Screen.HomeScreen,
-    val isSourceManagerOpen: Boolean = false
+    val isSourceManagerOpen: Boolean = false,
+    val isOpenGridList : Boolean = false
 )
