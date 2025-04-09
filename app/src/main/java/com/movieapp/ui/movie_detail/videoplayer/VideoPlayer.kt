@@ -1,8 +1,11 @@
+@file:Suppress("DEPRECATION")
+
 package com.movieapp.ui.movie_detail.videoplayer
 
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.view.WindowManager
 import androidx.activity.compose.BackHandler
 import androidx.annotation.OptIn
 import androidx.compose.foundation.background
@@ -15,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,18 +51,29 @@ fun VideoPlayer(
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     val activity = context as? Activity
+    val window = activity?.window
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val state = viewModel.state.collectAsState()
     LaunchedEffect(isLandscape) {
+        if (isLandscape) window?.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        else window?.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         viewModel.isFullScreen(isLandscape)
+    }
+    LaunchedEffect(state.value.isPlaying) {
+        if (state.value.isPlaying){
+            window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }else{
+            window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
     }
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             lifecycle = event
         }
         lifecycleOwner.lifecycle.addObserver(observer)
-
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
+            window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }
     BackHandler(
@@ -73,16 +88,14 @@ fun VideoPlayer(
             factory = {
                 PlayerView(context).also {
                     it.player = viewModel.player
-                    it.keepScreenOn = true
                     it.resizeMode =
                         AspectRatioFrameLayout.RESIZE_MODE_FIT
-                    it.setControllerAnimationEnabled(true)
                     it.setFullscreenButtonState(isLandscape)
                     it.setFullscreenButtonClickListener {
                         activity?.requestedOrientation = if (isLandscape) {
-                            ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT
+                            ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
                         } else {
-                            ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
+                            ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
                         }
                     }
                     it.setShowNextButton(false)
@@ -94,13 +107,10 @@ fun VideoPlayer(
                 when (lifecycle) {
                     Lifecycle.Event.ON_PAUSE -> {
                         it.onPause()
-                        it.player?.pause()
                     }
-
-                    Lifecycle.Event.ON_RESUME -> {
+                    Lifecycle.Event.ON_RESUME-> {
                         it.onResume()
                     }
-
                     else -> Unit
                 }
             },
