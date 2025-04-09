@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.movieapp.ui.movie_detail.composable.CustomCircularProgress
 import com.movieapp.ui.movie_list.composable.MovieItem
@@ -92,36 +94,48 @@ fun MovieSearchScreen(
 
             )
         }
-        when (state.status) {
-            is LoadStatus.Init -> {
-                Text(
-                    "Nhập từ khoá để tìm kiếm phim",
-                    style = MaterialTheme.typography.titleMedium.copy(netflix_gray_2)
-                )
-            }
-            is LoadStatus.Loading -> {
-                CustomCircularProgress()
-            }
-            is LoadStatus.Success -> {
-                LazyVerticalGrid(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 70.dp, start = 5.dp, end = 5.dp),
-                    columns = GridCells.Adaptive(minSize = 110.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
+        LazyVerticalGrid(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 70.dp, start = 5.dp, end = 5.dp),
+            columns = GridCells.Adaptive(minSize = 110.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            when (state.status) {
+                is LoadStatus.Init -> {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            "Nhập từ khoá để tìm kiếm phim",
+                            style = MaterialTheme.typography.titleMedium.copy(netflix_gray_2),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+                is LoadStatus.Loading -> {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        CustomCircularProgress()
+                    }
+                }
+                is LoadStatus.Success -> {
                     items(items = state.movieSearchList) {
                         MovieItem(
                             movie = it
                         ) { slug ->
-                            onItemClicked(slug)
                             focusManager.clearFocus()
+                            onItemClicked(slug)
                         }
                     }
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            "Không còn kết quả nào khác.",
+                            style = MaterialTheme.typography.titleMedium.copy(netflix_gray_2),
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
-            }
-            is LoadStatus.Error -> {
+                is LoadStatus.Error -> {
+                }
             }
         }
     }
