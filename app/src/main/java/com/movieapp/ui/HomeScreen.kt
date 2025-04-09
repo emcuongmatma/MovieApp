@@ -2,6 +2,11 @@ package com.movieapp.ui
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -44,6 +49,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.movieapp.ui.movie_detail.MovieDetailScreen
 import com.movieapp.ui.movie_detail.MovieDetailViewModel
+import com.movieapp.ui.movie_list.MovieListByType
 import com.movieapp.ui.movie_list.MovieListViewModel
 import com.movieapp.ui.movie_list.composable.MovieListScreen
 import com.movieapp.ui.movie_list.composable.SourceManagerDialog
@@ -90,8 +96,7 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
                 viewModel = movieDetailViewModel,
                 onExit = {
                     onExit(scope, bottomSheetState, movieDetailViewModel)
-                },
-                systemUiController = systemUiController
+                }
             )
         }
     ) {
@@ -101,17 +106,22 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
                 .background(color = Color.Black),
             contentAlignment = Alignment.BottomCenter
         ) {
-            when(mainState.screen){
-                Screen.HomeScreen ->{
+            when (mainState.screen) {
+                Screen.HomeScreen -> {
                     MovieListScreen(mainState = mainState,
                         onItemSelected = {
                             onItemSelected(scope, bottomSheetState, movieDetailViewModel, it)
                         },
                         onSourceClicked = {
                             mainViewModel.setSourceManagerOpen(true)
+                        },
+                        onMoreClicked = { slug ->
+                            mainViewModel.setTypeSlug(slug)
+                            mainViewModel.isGridListOpen(true)
                         })
                 }
-                Screen.SearchScreen ->{
+
+                Screen.SearchScreen -> {
                     MovieSearchScreen(
                         viewModel = movieSearchViewModel,
                         onItemClicked = {
@@ -131,7 +141,9 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Column(
-                    modifier = Modifier.clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {
+                    modifier = Modifier.clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }) {
                         mainViewModel.setScreen(Screen.HomeScreen)
                     },
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -149,7 +161,9 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
                     )
                 }
                 Column(
-                    modifier = Modifier.clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {
+                    modifier = Modifier.clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }) {
                         mainViewModel.setScreen(Screen.SearchScreen)
                     },
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -167,30 +181,62 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
                     )
                 }
             }
+            BackHandler(
+                enabled = mainState.isOpenGridList
+            ) {
+                mainViewModel.isGridListOpen(false)
+            }
+            AnimatedVisibility(
+                visible = mainState.isOpenGridList,
+                enter = slideInHorizontally(
+                    initialOffsetX = { fullWidth -> fullWidth },
+                ) + fadeIn(initialAlpha = 1f),
+                exit = slideOutHorizontally(
+                    targetOffsetX = { fullWidth -> fullWidth },
+                ) + fadeOut(targetAlpha = 1f)
+            ) {
+                MovieListByType(state = mainState,
+                    onExit = { mainViewModel.isGridListOpen(false) },
+                    onItemClicked = {
+                        onItemSelected(scope, bottomSheetState, movieDetailViewModel, it)
+                    },
+                    onMoreResult = {mainViewModel.getMoreResult()})
+            }
         }
     }
-    if (mainState.status is LoadStatus.Error){
-        Toast.makeText(LocalContext.current,"Lỗi kết nối !", Toast.LENGTH_SHORT).show()
+    if (mainState.status is LoadStatus.Error) {
+        Toast.makeText(LocalContext.current, "Lỗi kết nối !", Toast.LENGTH_SHORT).show()
         mainViewModel.reset()
     }
     if (mainState.isSourceManagerOpen) {
         SourceManagerDialog(
-            onDismissRequest = {  mainViewModel.setSourceManagerOpen(false) },
+            onDismissRequest = { mainViewModel.setSourceManagerOpen(false) },
             onSource = {
                 mainViewModel.changeSource(it)
             }
         )
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
-fun onExit(scope: CoroutineScope, bottomSheetState: BottomSheetScaffoldState, movieDetailViewModel: MovieDetailViewModel){
+fun onExit(
+    scope: CoroutineScope,
+    bottomSheetState: BottomSheetScaffoldState,
+    movieDetailViewModel: MovieDetailViewModel
+) {
     scope.launch {
         bottomSheetState.bottomSheetState.hide()
         movieDetailViewModel.pausePlayer()
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
-fun onItemSelected(scope: CoroutineScope, bottomSheetState: BottomSheetScaffoldState, movieDetailViewModel: MovieDetailViewModel,it:String){
+fun onItemSelected(
+    scope: CoroutineScope,
+    bottomSheetState: BottomSheetScaffoldState,
+    movieDetailViewModel: MovieDetailViewModel,
+    it: String
+) {
     movieDetailViewModel.setSlug(it)
     movieDetailViewModel.getMovieDetail()
     scope.launch {
