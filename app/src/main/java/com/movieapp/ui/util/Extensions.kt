@@ -49,7 +49,6 @@ fun List<CustomMovieModel>.converter(movieSourceManager: MovieSourceManager): Li
     return list
 }
 
-
 fun List<CustomMovieModel>.filter(): List<CustomMovieModel> {
     val allowCategory = listOf(
         "hanh-dong",
