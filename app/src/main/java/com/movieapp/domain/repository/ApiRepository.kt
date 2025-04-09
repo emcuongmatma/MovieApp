@@ -8,9 +8,9 @@ import com.skydoves.sandwich.ApiResponse
 
 
 interface ApiRepository {
-    suspend fun getRecentlyUpdateMovie():ApiResponse<RecentlyUpdateMovieResponseModel>
+    suspend fun getRecentlyUpdateMovie(page:Int):ApiResponse<RecentlyUpdateMovieResponseModel>
     suspend fun getMovieDetail(name: String):ApiResponse<MovieDetailResponseModel>
     suspend fun getMovieDetailNC(name: String):ApiResponse<NCMovieDetailResponeModel>
-    suspend fun getCustomMovie(type:String):ApiResponse<CustomMovieResponseModel>
+    suspend fun getCustomMovie(type:String,page:Int):ApiResponse<CustomMovieResponseModel>
     suspend fun getMovieDetailByName(name:String):ApiResponse<CustomMovieResponseModel>
 }
