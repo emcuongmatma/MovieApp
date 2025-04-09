@@ -23,18 +23,17 @@ import javax.inject.Inject
 class MovieSearchViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
     private val movieSourceManager: MovieSourceManager
-):ViewModel() {
+) : ViewModel() {
     private val _state = MutableStateFlow(MovieSearchState())
     val state = _state.asStateFlow()
-    private var job : Job? = null
+    private var job: Job? = null
     private fun getMovieDetailByName() =
         viewModelScope.launch(Dispatchers.IO) {
             apiRepository.getMovieDetailByName(_state.value.searchKey)
                 .onSuccess {
-                    val data = data.toListMovie(movieSourceManager)
                     _state.update {
                         it.copy(
-                            movieSearchList = data,
+                            movieSearchList = data.toListMovie(movieSourceManager),
                             status = LoadStatus.Success()
                         )
                     }
@@ -46,17 +45,19 @@ class MovieSearchViewModel @Inject constructor(
                     setToast(this.message())
                 }
         }
+
     fun updateSearchKey(key: String) {
         _state.update {
             it.copy(
-                searchKey = key,
-                status = LoadStatus.Loading()
+                searchKey = key
             )
         }
         job?.cancel()
-        job = getMovieDetailByName()
+        _state.value = _state.value.copy(status = LoadStatus.Loading())
+        job =  getMovieDetailByName()
     }
-    fun setToast(err:String){
+
+    fun setToast(err: String) {
         _state.update {
             it.copy(
                 status = LoadStatus.Error(err)
