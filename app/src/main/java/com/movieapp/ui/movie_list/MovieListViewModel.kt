@@ -56,9 +56,9 @@ class MovieListViewModel @Inject constructor(
         fetch3?.cancel()
         fetch4?.cancel()
         fetch1 = getRecentlyUpdate()
-        fetch2 = getCustomMovie("phim-bo",_state.value.currentPageF)
+        fetch2 = getCustomMovie("phim-bo",_state.value.currentPageS)
         fetch3 = getCustomMovie("phim-le",_state.value.currentPageF)
-        fetch4 = getCustomMovie("tv-shows",_state.value.currentPageF)
+        fetch4 = getCustomMovie("tv-shows",_state.value.currentPageT)
     }
 
     private fun clearList() {
