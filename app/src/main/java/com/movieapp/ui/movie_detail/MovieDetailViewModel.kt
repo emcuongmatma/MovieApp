@@ -106,6 +106,7 @@ class MovieDetailViewModel
     }
     fun pausePlayer() {
         player.pause()
+        player.clearMediaItems()
         _state.update {
             it.copy(
                 status = LoadStatus.Init(),
