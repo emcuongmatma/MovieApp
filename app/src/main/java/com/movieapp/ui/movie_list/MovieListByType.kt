@@ -1,5 +1,6 @@
 package com.movieapp.ui.movie_list
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,6 +40,9 @@ fun MovieListByType(
     onItemClicked: (String) -> Unit,
     onMoreResult: () -> Unit
 ) {
+    BackHandler {
+        onExit()
+    }
     val title: String = when (state.typeSlug) {
         "phim-moi-cap-nhat" -> "Phim mới cập nhật"
         "phim-bo" -> "Phim bộ"
@@ -59,7 +63,6 @@ fun MovieListByType(
         "tv-shows" -> {
             state.newTvShowList
         }
-
         else -> {
             listOf<CustomMovieModel>()
         }
