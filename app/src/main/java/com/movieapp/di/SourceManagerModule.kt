@@ -1,6 +1,6 @@
 package com.movieapp.di
 
-import com.movieapp.ui.util.MovieSourceManager
+import com.movieapp.data.datasource.remote.MovieSourceManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

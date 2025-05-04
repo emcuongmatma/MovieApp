@@ -34,6 +34,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.movieapp.ui.movie_detail.composable.CustomCircularProgress
 import com.movieapp.ui.movie_list.composable.MovieItem
 import com.movieapp.ui.theme.netflix_gray_2
@@ -43,7 +44,7 @@ import com.movieapp.ui.util.LoadStatus
 
 @Composable
 fun MovieSearchScreen(
-    viewModel: MovieSearchViewModel,
+    viewModel: MovieSearchViewModel = hiltViewModel(),
     onItemClicked: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -121,7 +122,7 @@ fun MovieSearchScreen(
                     items(items = state.movieSearchList) {
                         MovieItem(
                             movie = it
-                        ) { slug ->
+                        ) { slug,source ->
                             focusManager.clearFocus()
                             onItemClicked(slug)
                         }
