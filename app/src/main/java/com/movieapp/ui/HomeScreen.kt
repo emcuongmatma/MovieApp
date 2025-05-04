@@ -21,15 +21,14 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
@@ -49,12 +48,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.movieapp.ui.movie_detail.MovieDetailScreen
 import com.movieapp.ui.movie_detail.MovieDetailViewModel
+import com.movieapp.ui.movie_fav.MovieFavScreen
 import com.movieapp.ui.movie_list.MovieListByType
 import com.movieapp.ui.movie_list.MovieListViewModel
-import com.movieapp.ui.movie_list.composable.MovieListScreen
+import com.movieapp.ui.movie_list.MovieListScreen
 import com.movieapp.ui.movie_list.composable.SourceManagerDialog
 import com.movieapp.ui.movie_search.MovieSearchScreen
-import com.movieapp.ui.movie_search.MovieSearchViewModel
 import com.movieapp.ui.theme.netflix_black
 import com.movieapp.ui.theme.netflix_gray
 import com.movieapp.ui.util.LoadStatus
@@ -70,8 +69,7 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
         systemUiController.setStatusBarColor(Color.Transparent, darkIcons = false)
     }
     val mainState by mainViewModel.state.collectAsStateWithLifecycle()
-    val movieDetailViewModel: MovieDetailViewModel = hiltViewModel()
-    val movieSearchViewModel: MovieSearchViewModel = hiltViewModel()
+    val movieDetailViewModel : MovieDetailViewModel = hiltViewModel()
     val bottomSheetState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberStandardBottomSheetState(
             initialValue = SheetValue.Hidden,
@@ -90,12 +88,13 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
             BackHandler(
                 enabled = bottomSheetState.bottomSheetState.isVisible
             ) {
-                onExit(scope, bottomSheetState, movieDetailViewModel)
+                movieDetailViewModel.pausePlayer()
+                onExit(scope, bottomSheetState)
             }
             MovieDetailScreen(
                 viewModel = movieDetailViewModel,
                 onExit = {
-                    onExit(scope, bottomSheetState, movieDetailViewModel)
+                    onExit(scope, bottomSheetState)
                 }
             )
         }
@@ -118,16 +117,32 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
                         onMoreClicked = { slug ->
                             mainViewModel.setTypeSlug(slug)
                             mainViewModel.isGridListOpen(true)
+                        },
+                        onRefresh = {
+                            mainViewModel.fetchAllMovies()
                         })
                 }
-
                 Screen.SearchScreen -> {
                     MovieSearchScreen(
-                        viewModel = movieSearchViewModel,
                         onItemClicked = {
                             onItemSelected(scope, bottomSheetState, movieDetailViewModel, it)
                         }
                     )
+                }
+                Screen.FavouriteScreen -> {
+                    MovieFavScreen(
+                        state = mainState,
+                        onItemSelected = {slug,source->
+                            mainViewModel.changeSource(source!!.toInt())
+                            onItemSelected(scope, bottomSheetState, movieDetailViewModel, slug)
+                        },
+                        onMoreClicked = { slug ->
+                            mainViewModel.setTypeSlug(slug)
+                            mainViewModel.isGridListOpen(true)
+                        },
+                        onLoadFavMovies = {
+                            mainViewModel.loadFavMovies()
+                        })
                 }
             }
             Row(
@@ -153,12 +168,6 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
                         contentDescription = null,
                         tint = if (mainState.screen is Screen.HomeScreen) Color.White else netflix_gray
                     )
-                    Text(
-                        text = "Trang chủ",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = if (mainState.screen is Screen.HomeScreen) Color.White else netflix_gray
-                        )
-                    )
                 }
                 Column(
                     modifier = Modifier.clickable(
@@ -173,11 +182,19 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
                         contentDescription = null,
                         tint = if (mainState.screen is Screen.SearchScreen) Color.White else netflix_gray
                     )
-                    Text(
-                        "Tìm kiếm",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = if (mainState.screen is Screen.SearchScreen) Color.White else netflix_gray
-                        )
+                }
+                Column(
+                    modifier = Modifier.clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }) {
+                        mainViewModel.setScreen(Screen.FavouriteScreen)
+                    },
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        Icons.Filled.Favorite,
+                        contentDescription = null,
+                        tint = if (mainState.screen is Screen.FavouriteScreen) Color.White else netflix_gray
                     )
                 }
             }
@@ -221,12 +238,10 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 fun onExit(
     scope: CoroutineScope,
-    bottomSheetState: BottomSheetScaffoldState,
-    movieDetailViewModel: MovieDetailViewModel
+    bottomSheetState: BottomSheetScaffoldState
 ) {
     scope.launch {
         bottomSheetState.bottomSheetState.hide()
-        movieDetailViewModel.pausePlayer()
     }
 }
 
