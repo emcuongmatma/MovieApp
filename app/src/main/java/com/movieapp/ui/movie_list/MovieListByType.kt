@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.movieapp.domain.model.custom.CustomMovieModel
+import com.movieapp.data.model.custom.CustomMovieModel
 import com.movieapp.ui.movie_detail.composable.CustomCircularProgress
 import com.movieapp.ui.movie_list.composable.MovieItem
 import com.movieapp.ui.util.LoadStatus
@@ -48,6 +48,8 @@ fun MovieListByType(
         "phim-bo" -> "Phim bộ"
         "phim-le" -> "Phim lẻ"
         "tv-shows" -> "Tv Shows"
+        "tiep-tuc" -> "Tiếp tục xem"
+        "yeu-thich" -> "Phim yêu thích"
         else -> ""
     }
     val list: List<CustomMovieModel> = when (state.typeSlug) {
@@ -62,6 +64,12 @@ fun MovieListByType(
         }
         "tv-shows" -> {
             state.newTvShowList
+        }
+        "tiep-tuc" -> {
+            state.resMovieList
+        }
+        "yeu-thich" -> {
+            state.favMovieList
         }
         else -> {
             listOf<CustomMovieModel>()
@@ -102,7 +110,7 @@ fun MovieListByType(
             items(items = list) {
                 MovieItem(
                     movie = it
-                ) { slug ->
+                ) { slug,source ->
                     onItemClicked(slug)
                 }
             }
@@ -112,20 +120,22 @@ fun MovieListByType(
                         CustomCircularProgress()
                     }
                     else -> {
-                        Button(
-                            onClick = {
-                                onMoreResult()
-                            },
-                            colors = ButtonDefaults.textButtonColors()
-                                .copy(containerColor = Color.White, contentColor = Color.Black),
-                            modifier = Modifier.padding(start = 30.dp, end = 30.dp),
-                            shape = RoundedCornerShape(5.dp)
-                        ) {
-                            Text(
-                                "Hiển thị thêm kết quả",
-                                style = MaterialTheme.typography.titleMedium,
-                                textAlign = TextAlign.Center
-                            )
+                        if (state.typeSlug != "tiep-tuc" && state.typeSlug != "yeu-thich") {
+                            Button(
+                                onClick = {
+                                    onMoreResult()
+                                },
+                                colors = ButtonDefaults.textButtonColors()
+                                    .copy(containerColor = Color.White, contentColor = Color.Black),
+                                modifier = Modifier.padding(start = 30.dp, end = 30.dp),
+                                shape = RoundedCornerShape(5.dp)
+                            ) {
+                                Text(
+                                    "Hiển thị thêm kết quả",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
                     }
                 }
