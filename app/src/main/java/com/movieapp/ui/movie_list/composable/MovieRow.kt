@@ -12,12 +12,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.movieapp.domain.model.custom.CustomMovieModel
+import com.movieapp.data.model.custom.CustomMovieModel
 import com.movieapp.ui.theme.netflix_gray_2
 
 @Composable
-fun MovieRow(text: String, list: List<CustomMovieModel>, onItemClicked: (String) -> Unit,onMoreClicked:()->Unit) {
+fun MovieRow(
+    text: String,
+    list: List<CustomMovieModel>,
+    onItemSelected: (String, Int?) -> Unit,
+    onMoreClicked: () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -32,9 +38,11 @@ fun MovieRow(text: String, list: List<CustomMovieModel>, onItemClicked: (String)
         )
         Text(
             "Xem thêm",
-            modifier = Modifier.padding(end = 5.dp).clickable{
-                onMoreClicked()
-            },
+            modifier = Modifier
+                .padding(end = 5.dp)
+                .clickable {
+                    onMoreClicked()
+                },
             style = MaterialTheme.typography.titleSmall.copy(
                 color = netflix_gray_2
             )
@@ -47,16 +55,26 @@ fun MovieRow(text: String, list: List<CustomMovieModel>, onItemClicked: (String)
         horizontalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         if (list.isEmpty()) {
-            items(count = 10) {
-                MovieItem(movie = null) {
-                    onItemClicked(it)
+            if (text != "Tiếp tục xem" && text != "Yêu thích") {
+                items(count = 10) {
+                    MovieItem(movie = null, onItemSelected = { slug, source -> })
+                }
+            } else {
+                item {
+                    Text(
+                        text = "Danh sách trống!",
+                        style = MaterialTheme.typography.titleSmall.copy(
+                            color = netflix_gray_2
+                        ),
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
         } else {
-            items(count = if(list.size > 10) 10 else list.size ) { index ->
-                MovieItem(movie = list[index]) { string ->
-                    onItemClicked(string)
-                }
+            items(count = if (list.size > 10) 10 else list.size) { index ->
+                MovieItem(
+                    movie = list[index],
+                    onItemSelected = { slug, source -> onItemSelected(slug, source) })
             }
         }
 

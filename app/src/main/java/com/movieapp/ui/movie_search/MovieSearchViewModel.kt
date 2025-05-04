@@ -2,9 +2,9 @@ package com.movieapp.ui.movie_search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.movieapp.domain.repository.ApiRepository
+import com.movieapp.data.repository.remote.ApiRepository
 import com.movieapp.ui.util.LoadStatus
-import com.movieapp.ui.util.MovieSourceManager
+import com.movieapp.data.datasource.remote.MovieSourceManager
 import com.movieapp.ui.util.toListMovie
 import com.skydoves.sandwich.message
 import com.skydoves.sandwich.onError

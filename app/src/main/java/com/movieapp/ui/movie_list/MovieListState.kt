@@ -1,9 +1,9 @@
 package com.movieapp.ui.movie_list
 
-import com.movieapp.domain.model.custom.CustomMovieModel
-import com.movieapp.domain.model.moviedetail.MovieDetailResponseModel
+import com.movieapp.data.model.custom.CustomMovieModel
+import com.movieapp.data.model.moviedetail.MovieDetailResponseModel
 import com.movieapp.ui.util.LoadStatus
-import com.movieapp.ui.util.MovieSourceManager
+import com.movieapp.data.datasource.remote.MovieSourceManager
 import com.movieapp.ui.util.Screen
 
 
@@ -22,5 +22,8 @@ data class MovieListState(
     val status : LoadStatus = LoadStatus.Init(),
     val screen: Screen = Screen.HomeScreen,
     val isSourceManagerOpen: Boolean = false,
-    val isOpenGridList : Boolean = false
+    val isOpenGridList : Boolean = false,
+    val resMovieList: List<CustomMovieModel> = emptyList(),
+    val favMovieList: List<CustomMovieModel> = emptyList(),
+    val isRefreshing: Boolean = false
 )
