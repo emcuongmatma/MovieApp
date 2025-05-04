@@ -66,13 +66,17 @@ fun MovieDetailScreen(
                     VideoPlayer(
                         modifier = modifierVideoPlayer,
                         viewModel = viewModel,
-                        onExit = onExit
+                        onExit = {
+                            viewModel.pausePlayer()
+                            onExit()
+                        }
                     )
                 }
                 MovieDetails(
                     state,
                     onSeverSelected = { viewModel.onServerChange(it) },
-                    onEpSelected = { viewModel.onEpChange(it) })
+                    onEpSelected = { viewModel.onEpChange(it) },
+                    addFavMovie = {viewModel.addFavMovie()})
             }
             is LoadStatus.Error -> {
                 Toast.makeText(LocalContext.current, state.status.description,Toast.LENGTH_SHORT).show()
