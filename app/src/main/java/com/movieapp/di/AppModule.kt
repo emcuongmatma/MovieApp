@@ -1,8 +1,8 @@
 package com.movieapp.di
 
-import com.movieapp.data.reppository.ApiRepositoryImpl
-import com.movieapp.domain.repository.ApiRepository
-import com.movieapp.ui.util.MovieSourceManager
+import com.movieapp.data.repository.remote.ApiRepositoryImpl
+import com.movieapp.data.repository.remote.ApiRepository
+import com.movieapp.data.datasource.remote.MovieSourceManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
