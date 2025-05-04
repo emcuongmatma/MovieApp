@@ -1,52 +1,58 @@
 package com.movieapp.ui.util
 
-import com.movieapp.domain.model.custom.CustomMovieModel
-import com.movieapp.domain.model.custom.CustomMovieResponseModel
+import com.movieapp.data.datasource.remote.MovieSourceManager
+import com.movieapp.data.model.custom.CustomMovieModel
+import com.movieapp.data.model.custom.CustomMovieResponseModel
 import kotlin.collections.all
 import kotlin.collections.contains
-import kotlin.collections.filter
+import kotlin.text.contains
 
-fun CustomMovieResponseModel.toListMovie(movieSourceManager: MovieSourceManager):List<CustomMovieModel>{
-    val list: List<CustomMovieModel> = when(movieSourceManager.currentSource.value){
-        is MovieSourceManager.MovieSource.KKPhim ->{
+fun CustomMovieResponseModel.toListMovie(movieSourceManager: MovieSourceManager): List<CustomMovieModel> {
+    val list: List<CustomMovieModel> = when (movieSourceManager.currentSource.value) {
+        is MovieSourceManager.MovieSource.KKPhim -> {
             this.data!!.items!!.filter().map { item ->
-                item.copy(posterUrl = if (!item.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + item.posterUrl else item.posterUrl)
+                item.fixImg(movieSourceManager)
             }
         }
-        is MovieSourceManager.MovieSource.Ophim ->{
+
+        is MovieSourceManager.MovieSource.Ophim -> {
             this.data!!.items!!.filter().map { item ->
-                item.copy(posterUrl = if (!item.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + item.thumbUrl else item.thumbUrl)
+                item.fixImg(movieSourceManager)
             }
         }
-        is MovieSourceManager.MovieSource.NguonC ->{
+
+        is MovieSourceManager.MovieSource.NguonC -> {
             this.items!!.filter().map { item ->
-                item.copy(posterUrl = if (!item.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + item.thumbUrl else item.thumbUrl)
+                item.fixImg(movieSourceManager)
             }
         }
     }
     return list
 }
+
 fun List<CustomMovieModel>.converter(movieSourceManager: MovieSourceManager): List<CustomMovieModel> {
-    val list: List<CustomMovieModel> = when (movieSourceManager.currentSource.value) {
+    val list: List<CustomMovieModel> =
+        this.filter().map { item ->
+            item.fixImg(movieSourceManager)
+        }
+    return list
+}
+
+fun CustomMovieModel.fixImg(movieSourceManager: MovieSourceManager): CustomMovieModel {
+    val movie = when (movieSourceManager.currentSource.value) {
         is MovieSourceManager.MovieSource.KKPhim -> {
-            this.filter().map { item ->
-                item.copy(posterUrl = if (!item.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + item.posterUrl else item.posterUrl)
-            }
+            this.copy(posterUrl = if (!this.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + this.posterUrl else this.posterUrl)
         }
 
         is MovieSourceManager.MovieSource.Ophim -> {
-            this.filter().map { item ->
-                item.copy(posterUrl = if (!item.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + item.thumbUrl else item.thumbUrl)
-            }
+            this.copy(posterUrl = if (!this.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + this.thumbUrl else this.thumbUrl)
         }
 
         is MovieSourceManager.MovieSource.NguonC -> {
-            this.filter().map { item ->
-                item.copy(posterUrl = if (!item.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + item.thumbUrl else item.thumbUrl)
-            }
+            this.copy(posterUrl = if (!this.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + this.thumbUrl else this.thumbUrl)
         }
     }
-    return list
+    return movie
 }
 
 fun List<CustomMovieModel>.filter(): List<CustomMovieModel> {
