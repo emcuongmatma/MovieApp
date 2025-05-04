@@ -2,9 +2,10 @@ package com.movieapp.ui.movie_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.movieapp.domain.repository.ApiRepository
+import com.movieapp.data.datasource.local.dao.MovieDao
+import com.movieapp.data.repository.remote.ApiRepository
 import com.movieapp.ui.util.LoadStatus
-import com.movieapp.ui.util.MovieSourceManager
+import com.movieapp.data.datasource.remote.MovieSourceManager
 import com.movieapp.ui.util.Screen
 import com.movieapp.ui.util.converter
 import com.movieapp.ui.util.filter
@@ -16,6 +17,7 @@ import com.skydoves.sandwich.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -25,7 +27,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieListViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
-    private val movieSourceManager: MovieSourceManager
+    private val movieSourceManager: MovieSourceManager,
+    private val movieDao: MovieDao
 ) : ViewModel() {
     private val _state = MutableStateFlow(MovieListState())
     val state = _state.asStateFlow()
@@ -33,12 +36,10 @@ class MovieListViewModel @Inject constructor(
     private var fetch2: Job? = null
     private var fetch3: Job? = null
     private var fetch4: Job? = null
-
     init {
         _state.update { it.copy(status = LoadStatus.Loading()) }
         observeMovieSource()
     }
-
     private fun observeMovieSource() {
         viewModelScope.launch {
             movieSourceManager.currentSource.collect { newSource ->
@@ -49,18 +50,30 @@ class MovieListViewModel @Inject constructor(
             }
         }
     }
-
-    private fun fetchAllMovies() {
+    fun fetchAllMovies() {
+        _state.update { it.copy(status = LoadStatus.Loading()) }
         fetch1?.cancel()
         fetch2?.cancel()
         fetch3?.cancel()
         fetch4?.cancel()
+        clearList()
         fetch1 = getRecentlyUpdate()
         fetch2 = getCustomMovie("phim-bo",_state.value.currentPageS)
         fetch3 = getCustomMovie("phim-le",_state.value.currentPageF)
         fetch4 = getCustomMovie("tv-shows",_state.value.currentPageT)
     }
-
+    fun loadFavMovies(){
+        _state.update { it.copy(isRefreshing = true,status = LoadStatus.Loading()) }
+        viewModelScope.launch(Dispatchers.IO){
+            _state.update {
+                it.copy(
+                    resMovieList = movieDao.getAllResMovie().reversed(),
+                    favMovieList = movieDao.getAllFavMovie().reversed()
+                )
+            }
+            _state.update { it.copy(isRefreshing = false,status = LoadStatus.Success()) }
+        }
+    }
     private fun clearList() {
         _state.update {
             it.copy(
@@ -96,8 +109,6 @@ class MovieListViewModel @Inject constructor(
                     setToast(this.message())
                 }
         }
-
-
     private fun getCustomMovie(type: String,currentPage:Int) =
         viewModelScope.launch(Dispatchers.IO) {
             apiRepository.getCustomMovie(type,currentPage)
@@ -136,16 +147,13 @@ class MovieListViewModel @Inject constructor(
             0 -> {
                 movieSourceManager.changeSource(MovieSourceManager.MovieSource.KKPhim)
             }
-
             1 -> {
                 movieSourceManager.changeSource(MovieSourceManager.MovieSource.Ophim)
             }
-
             2 -> {
                 movieSourceManager.changeSource(MovieSourceManager.MovieSource.NguonC)
             }
         }
-        clearList()
     }
     private fun setToast(err: String) {
         _state.update {
@@ -156,6 +164,7 @@ class MovieListViewModel @Inject constructor(
     }
     fun setScreen(screen: Screen) {
         _state.update { it.copy(screen = screen) }
+        if (screen is Screen.FavouriteScreen) loadFavMovies()
     }
     fun setSourceManagerOpen(boolean: Boolean) {
         _state.update {
