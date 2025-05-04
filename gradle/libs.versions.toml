@@ -1,4 +1,5 @@
 [versions]
+accompanistSwiperefresh = "0.30.1"
 accompanistSystemuicontroller = "0.28.0"
 agp = "8.8.2"
 coilNetworkOkhttp = "3.1.0"
@@ -19,18 +20,23 @@ composeBom = "2025.03.01"
 material3 = "1.3.1"
 media3Exoplayer = "1.6.0"
 navigationCompose = "2.8.9"
+roomCompiler = "2.7.1"
+roomRuntime = "2.7.1"
 sandwich = "2.1.0"
 ktor = "3.1.0"
 slf4jSimple = "1.7.30"
 adaptiveAndroid = "1.1.0"
 [libraries]
 #ktor
+accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanistSwiperefresh" }
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Exoplayer" }
 androidx-media3-exoplayer-hls = { module = "androidx.media3:media3-exoplayer-hls", version.ref = "media3Exoplayer" }
 androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3Exoplayer" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
 compose-video = { module = "io.sanghun:compose-video", version.ref = "composeVideo" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }

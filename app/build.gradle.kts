@@ -76,6 +76,11 @@ dependencies {
 
     //navi
     implementation(libs.androidx.navigation.compose)
+    //room
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.accompanist.swiperefresh)
+
 
     implementation(libs.jetbrains.kotlinx.serialization.json)
     implementation(libs.androidx.core.ktx)
