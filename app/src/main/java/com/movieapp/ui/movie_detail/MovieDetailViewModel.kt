@@ -10,29 +10,25 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.movieapp.data.datasource.local.dao.MovieDao
 import com.movieapp.data.datasource.local.dao.ResumeMovieDetail
+import com.movieapp.data.datasource.remote.MovieSourceManager
 import com.movieapp.data.model.moviedetail.MovieDetailModel
 import com.movieapp.data.model.moviedetail.MovieDetailResponseModel
+import com.movieapp.data.model.moviedetail.toCustomMovieModel
 import com.movieapp.data.model.nCModel.toMovieDetailResponseModel
 import com.movieapp.data.repository.remote.ApiRepository
 import com.movieapp.ui.util.LoadStatus
-import com.movieapp.data.datasource.remote.MovieSourceManager
-import com.movieapp.data.model.moviedetail.toCustomMovieModel
 import com.movieapp.ui.util.fixImg
-import com.skydoves.sandwich.ApiResponse
 import com.skydoves.sandwich.isSuccess
 import com.skydoves.sandwich.message
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onFailure
 import com.skydoves.sandwich.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.internal.wait
 import javax.inject.Inject
 
 
