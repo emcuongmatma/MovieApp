@@ -74,13 +74,14 @@ class MovieDetailViewModel
                     epSelected = videoItems[0].first().mediaId
                 )
             }
-            playVideo()
+            playVideo(true)
         }
     }
 
-    private fun playVideo() {
+    private fun playVideo(resume: Boolean) {
+        player.playWhenReady = true
         player.setMediaItem(videoItems[_state.value.serverSelected].find { it.mediaId == _state.value.epSelected }!!)
-        if (_state.value.resume.resumePositionMs > 0L)
+        if (resume && _state.value.resume.resumePositionMs > 0L)
             player.seekTo(_state.value.resume.resumePositionMs)
         player.play()
     }
@@ -151,6 +152,7 @@ class MovieDetailViewModel
     }
 
     fun pausePlayer() {
+        player.playWhenReady = false
         player.pause()
         viewModelScope.launch {
             if (!_state.value.movie.movie?.slug.isNullOrEmpty()) {
@@ -166,6 +168,36 @@ class MovieDetailViewModel
                 )
             }
         }
+    }
+
+    fun onEpChange(name: String) {
+        _state.update {
+            it.copy(
+                epSelected = name
+            )
+        }
+        playVideo(false)
+    }
+
+    fun onServerChange(int: Int) {
+        _state.update {
+            it.copy(
+                serverSelected = int,
+                epSelected = videoItems[int].first().mediaId
+            )
+        }
+        playVideo(false)
+    }
+
+    fun setToast(err: String) {
+        _state.update {
+            it.copy(
+                status = LoadStatus.Error(err)
+            )
+        }
+    }
+
+    fun reset() {
         player.clearMediaItems()
         _state.update {
             it.copy(
@@ -179,41 +211,6 @@ class MovieDetailViewModel
         }
     }
 
-    fun onEpChange(name: String) {
-        _state.update {
-            it.copy(
-                epSelected = name
-            )
-        }
-        playVideo()
-    }
-
-    fun onServerChange(int: Int) {
-        _state.update {
-            it.copy(
-                serverSelected = int,
-                epSelected = videoItems[int].first().mediaId
-            )
-        }
-        playVideo()
-    }
-
-    fun setToast(err: String) {
-        _state.update {
-            it.copy(
-                status = LoadStatus.Error(err)
-            )
-        }
-    }
-
-    fun reset() {
-        _state.update {
-            it.copy(
-                status = LoadStatus.Init()
-            )
-        }
-    }
-
     fun isFullScreen(boolean: Boolean) {
         _state.update {
             it.copy(
@@ -221,7 +218,6 @@ class MovieDetailViewModel
             )
         }
     }
-
     fun setSlug(slug: String) {
         _state.update {
             it.copy(
@@ -232,6 +228,7 @@ class MovieDetailViewModel
 
     override fun onCleared() {
         pausePlayer()
+        player.release()
         super.onCleared()
     }
 }

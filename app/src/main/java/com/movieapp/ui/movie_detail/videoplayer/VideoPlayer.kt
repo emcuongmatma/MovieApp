@@ -111,6 +111,9 @@ fun VideoPlayer(
                     Lifecycle.Event.ON_RESUME-> {
                         it.onResume()
                     }
+                    Lifecycle.Event.ON_STOP -> {
+                        viewModel.pausePlayer()
+                    }
                     else -> Unit
                 }
             },

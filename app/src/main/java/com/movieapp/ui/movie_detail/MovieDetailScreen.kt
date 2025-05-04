@@ -68,6 +68,7 @@ fun MovieDetailScreen(
                         viewModel = viewModel,
                         onExit = {
                             viewModel.pausePlayer()
+                            viewModel.reset()
                             onExit()
                         }
                     )

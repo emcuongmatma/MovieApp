@@ -89,6 +89,7 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
                 enabled = bottomSheetState.bottomSheetState.isVisible
             ) {
                 movieDetailViewModel.pausePlayer()
+                movieDetailViewModel.reset()
                 onExit(scope, bottomSheetState)
             }
             MovieDetailScreen(
