@@ -14,6 +14,7 @@ Movie Streaming android app built with Jetpack Compose, Hilt, Coroutines, Flow, 
  <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_20250326_074318.png" />
   <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_20250326_074353.png" />
   <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_20250326_074455.png" />
+  <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_2025-05-04-161047.jpg" />
 </p>
 
 <p align="center" width="100%">
@@ -31,10 +32,11 @@ Movie Streaming android app built with Jetpack Compose, Hilt, Coroutines, Flow, 
   - TV Series Search
   - TV Series Detail
 - Bottom navigation
+- Continue watching 
+- Mark as Favourite
 <!-- - Network connection state with SnackBar -->
 ## Architecture 
   - MVVM Architecture (Model - ComposableView - ViewModel)
-
 ## Built With 
 - [Kotlin](https://kotlinlang.org/) - First class and official programming language for Android development.
 - [Jetpack Compose](https://developer.android.com/jetpack/compose) - Jetpack Compose is Android’s modern toolkit for building native UI.
@@ -45,6 +47,7 @@ Movie Streaming android app built with Jetpack Compose, Hilt, Coroutines, Flow, 
   - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) - Stores UI-related data that isn't destroyed on UI changes.
 - [Dependency Injection](https://developer.android.com/training/dependency-injection)
   - [Hilt](https://dagger.dev/hilt) - Easier way to incorporate Dagger DI into Android apps.
+- [Room](https://developer.android.com/jetpack/androidx/releases/room) - The Room persistence library provides an abstraction layer over SQLite to allow for more robust database access while harnessing the full power of SQLite.
 - [Material Components for Android](https://github.com/material-components/material-components-android) - Modular and customizable Material Design UI components for Android.
 - [Sandwich](https://github.com/skydoves/sandwich) - Sandwich is an adaptable and lightweight sealed API library designed for handling API responses and exceptions in Kotlin for Retrofit, Ktor, and Kotlin Multiplatform.
 - [Ktor](https://github.com/ktorio/ktor) - Framework for quickly creating connected applications in Kotlin with minimal effort
