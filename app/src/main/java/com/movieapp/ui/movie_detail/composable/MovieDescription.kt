@@ -1,5 +1,6 @@
 package com.movieapp.ui.movie_detail.composable
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,10 +12,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,10 +32,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.movieapp.ui.movie_detail.MovieDetailState
+import com.movieapp.ui.theme.netflix_black
 import com.movieapp.ui.theme.netflix_gray
 import com.movieapp.ui.theme.netflix_red
 import com.movieapp.ui.theme.netflix_white_15
@@ -39,7 +48,8 @@ import com.movieapp.ui.theme.netflix_white_30
 fun MovieDetails(
     state: MovieDetailState,
     onSeverSelected: (Int) -> Unit,
-    onEpSelected: (String) -> Unit
+    onEpSelected: (String) -> Unit,
+    addFavMovie:()->Unit
 ) {
     var isShowFull by remember {
         mutableStateOf(false)
@@ -47,7 +57,7 @@ fun MovieDetails(
     val gridState = rememberLazyGridState()
     Column(
         modifier = Modifier
-            .background(Color(33, 33, 33))
+            .background(netflix_black)
             .fillMaxSize()
             .padding(5.dp),
         verticalArrangement = Arrangement.spacedBy(5.dp)
@@ -93,63 +103,76 @@ fun MovieDetails(
                     maxLines = 1
                 )
             }
+            IconButton(onClick = {
+                addFavMovie()
+            }, modifier = Modifier.size(30.dp)) {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = null,
+                    tint = if (state.isFav) netflix_red else netflix_white_30,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
+
         Text(
-            text = state.movie.movie?.content.toString().replaceFirstChar {  if (it.isLowerCase()) it.titlecase() else it.toString() },
+            text = state.movie.movie?.content.toString()
+                .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() },
             style = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
             maxLines = if (!isShowFull) 3 else Int.MAX_VALUE,
+            textAlign = TextAlign.Justify,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.clickable {
                 isShowFull = !isShowFull
             }
         )
         Text(
-            text =  "Cast: "+ if (state.movie.movie?.casts!!.isNotEmpty()) state.movie.movie.casts else state.movie.movie.actor.joinToString(", "),
+            text = "Cast: " + if (state.movie.movie?.casts!!.isNotEmpty()) state.movie.movie.casts else state.movie.movie.actor.joinToString(
+                ", "
+            ),
             style = MaterialTheme.typography.bodySmall.copy(color = netflix_gray),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
         Text(
-            text =  "Director: " + state.movie.movie.director.joinToString(", "),
+            text = "Director: " + state.movie.movie.director.joinToString(", "),
             style = MaterialTheme.typography.bodySmall.copy(color = netflix_gray),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(5.dp)
-        ) {
-            Text(
-                text = "Chọn Server",
-                style = MaterialTheme.typography.titleLarge.copy(color = Color.White),
-                fontWeight = FontWeight.Bold
-            )
-            state.movie.episodes?.let {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(15.dp)) {
-                    for (i in state.movie.episodes.indices) {
-                        ServerItem(
-                            name = state.movie.episodes[i].serverName!!,
-                            index = i,
-                            serverSelected = state.serverSelected
-                        ) {
-                            onSeverSelected(it)
-                        }
+        Text(
+            text = "Chọn Server",
+            style = MaterialTheme.typography.titleLarge.copy(color = Color.White),
+            fontWeight = FontWeight.Bold
+        )
+        state.movie.episodes?.let {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(15.dp)
+            ) {
+                for (i in state.movie.episodes.indices) {
+                    ServerItem(
+                        name = state.movie.episodes[i].serverName!!,
+                        index = i,
+                        serverSelected = state.serverSelected
+                    ) {
+                        onSeverSelected(it)
                     }
                 }
-                LazyVerticalGrid(
-                    modifier = Modifier.fillMaxWidth(),
-                    columns = GridCells.Fixed(9),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    state = gridState
-                ) {
-                    items(items = state.movie.episodes[state.serverSelected].serverData) { item ->
-                        EpItem(
-                            ep = item.name!!,
-                            epSelected = state.epSelected
-                        ) {
-                            onEpSelected(item.name)
-                        }
+            }
+            LazyVerticalGrid(
+                modifier = Modifier.fillMaxWidth(),
+                columns = GridCells.Fixed(9),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                state = gridState
+            ) {
+                items(items = state.movie.episodes[state.serverSelected].serverData) { item ->
+                    EpItem(
+                        ep = item.name!!,
+                        epSelected = state.epSelected
+                    ) {
+                        onEpSelected(item.name)
                     }
                 }
             }
