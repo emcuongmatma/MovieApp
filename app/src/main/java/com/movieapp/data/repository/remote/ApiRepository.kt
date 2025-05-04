@@ -1,9 +1,9 @@
-package com.movieapp.domain.repository
+package com.movieapp.data.repository.remote
 
-import com.movieapp.domain.model.nCModel.NCMovieDetailResponeModel
-import com.movieapp.domain.model.recentlyupdate.RecentlyUpdateMovieResponseModel
-import com.movieapp.domain.model.custom.CustomMovieResponseModel
-import com.movieapp.domain.model.moviedetail.MovieDetailResponseModel
+import com.movieapp.data.model.custom.CustomMovieResponseModel
+import com.movieapp.data.model.moviedetail.MovieDetailResponseModel
+import com.movieapp.data.model.nCModel.NCMovieDetailResponeModel
+import com.movieapp.data.model.recentlyupdate.RecentlyUpdateMovieResponseModel
 import com.skydoves.sandwich.ApiResponse
 
 
