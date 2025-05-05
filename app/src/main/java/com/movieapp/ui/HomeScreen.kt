@@ -218,7 +218,10 @@ fun HomeScreen(mainViewModel: MovieListViewModel) {
                     onItemClicked = {
                         onItemSelected(scope, bottomSheetState, movieDetailViewModel, it)
                     },
-                    onMoreResult = {mainViewModel.getMoreResult()})
+                    onMoreResult = {mainViewModel.getMoreResult()},
+                    onClear = {
+                        mainViewModel.onClear(it)
+                    })
             }
         }
     }

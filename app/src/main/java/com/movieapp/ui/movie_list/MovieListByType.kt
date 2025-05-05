@@ -38,7 +38,8 @@ fun MovieListByType(
     onExit: () -> Unit,
     state: MovieListState,
     onItemClicked: (String) -> Unit,
-    onMoreResult: () -> Unit
+    onMoreResult: () -> Unit,
+    onClear: (String) -> Unit
 ) {
     BackHandler {
         onExit()
@@ -48,7 +49,7 @@ fun MovieListByType(
         "phim-bo" -> "Phim bộ"
         "phim-le" -> "Phim lẻ"
         "tv-shows" -> "Tv Shows"
-        "tiep-tuc" -> "Tiếp tục xem"
+        "lich-su" -> "Lịch sử xem"
         "yeu-thich" -> "Phim yêu thích"
         else -> ""
     }
@@ -56,21 +57,27 @@ fun MovieListByType(
         "phim-moi-cap-nhat" -> {
             state.recentlyUpdateList
         }
+
         "phim-bo" -> {
             state.newSeriesList
         }
+
         "phim-le" -> {
             state.newStandaloneFilmList
         }
+
         "tv-shows" -> {
             state.newTvShowList
         }
-        "tiep-tuc" -> {
+
+        "lich-su" -> {
             state.resMovieList
         }
+
         "yeu-thich" -> {
             state.favMovieList
         }
+
         else -> {
             listOf<CustomMovieModel>()
         }
@@ -109,10 +116,11 @@ fun MovieListByType(
         ) {
             items(items = list) {
                 MovieItem(
-                    movie = it
-                ) { slug,source ->
-                    onItemClicked(slug)
-                }
+                    movie = it,
+                    onItemSelected = { slug, source ->
+                        onItemClicked(slug)
+                    }
+                )
             }
             item(span = { GridItemSpan(maxLineSpan) }) {
                 when (state.status) {
@@ -120,22 +128,28 @@ fun MovieListByType(
                         CustomCircularProgress()
                     }
                     else -> {
-                        if (state.typeSlug != "tiep-tuc" && state.typeSlug != "yeu-thich") {
-                            Button(
-                                onClick = {
-                                    onMoreResult()
+                        Button(
+                            onClick = {
+                                when (state.typeSlug.toString()){
+                                    "lich-su" -> onClear("r")
+                                    "yeu-thich" -> onClear("f")
+                                    else -> onMoreResult()
+                                }
+                            },
+                            colors = ButtonDefaults.textButtonColors()
+                                .copy(containerColor = Color.White, contentColor = Color.Black),
+                            modifier = Modifier.padding(start = 30.dp, end = 30.dp),
+                            shape = RoundedCornerShape(5.dp)
+                        ) {
+                            Text(
+                                text =  when (state.typeSlug.toString()){
+                                    "lich-su" -> "Xoá lịch sử xem"
+                                    "yeu-thich" -> "Xoá danh sách yêu thích"
+                                    else -> "Hiển thị thêm kết quả"
                                 },
-                                colors = ButtonDefaults.textButtonColors()
-                                    .copy(containerColor = Color.White, contentColor = Color.Black),
-                                modifier = Modifier.padding(start = 30.dp, end = 30.dp),
-                                shape = RoundedCornerShape(5.dp)
-                            ) {
-                                Text(
-                                    "Hiển thị thêm kết quả",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
+                                style = MaterialTheme.typography.titleMedium,
+                                textAlign = TextAlign.Center
+                            )
                         }
                     }
                 }
