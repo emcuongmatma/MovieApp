@@ -40,7 +40,7 @@ class MovieListViewModel @Inject constructor(
         observeMovieSource()
     }
     private fun observeMovieSource() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             movieSourceManager.currentSource.collect { newSource ->
                 _state.value = _state.value.copy(
                     movieSource = newSource
@@ -87,7 +87,21 @@ class MovieListViewModel @Inject constructor(
             )
         }
     }
-
+    fun onClear(string: String){
+        viewModelScope.launch(Dispatchers.IO){
+            when(string){
+                "r" -> {
+                    movieDao.delRnF()
+                    movieDao.updateRaF()
+                }
+                "f" -> {
+                    movieDao.delFnR()
+                    movieDao.updateFaR()
+                }
+            }
+            loadFavMovies()
+        }
+    }
     private fun getRecentlyUpdate() =
         viewModelScope.launch(Dispatchers.IO) {
             apiRepository.getRecentlyUpdateMovie(_state.value.currentPageR)
