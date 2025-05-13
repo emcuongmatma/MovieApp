@@ -31,16 +31,6 @@ class MovieSourceManager {
             override val SEARCH_TAIL = "&sort_field=year"
             override val IMAGE_BASE_URL = "https://phimimg.com/"
         }
-        data object NguonC : MovieSource() {
-            override val index = 2
-            override val BASE_URL = "https://phim.nguonc.com/api/"
-            override val ADD_RECENTLY_URL = "films/danh-sach/phim-dang-chieu"
-            override val GET_DETAIL_URL = "film/"
-            override val GET_CUSTOM_HEAD = "films/danh-sach/"
-            override val SEARCH_HEAD = "films/search?keyword="
-            override val SEARCH_TAIL = "&sort_field=year"
-            override val IMAGE_BASE_URL = ""
-        }
         data object Ophim : MovieSource() {
             override val index = 1
             override val BASE_URL = "https://ophim1.com/"
@@ -50,6 +40,16 @@ class MovieSourceManager {
             override val SEARCH_HEAD = "/v1/api/tim-kiem?keyword="
             override val SEARCH_TAIL = "&sort_field=year"
             override val IMAGE_BASE_URL = "https://img.ophim.live/uploads/movies/"
+        }
+        data object NguonC : MovieSource() {
+            override val index = 2
+            override val BASE_URL = "https://phim.nguonc.com/api/"
+            override val ADD_RECENTLY_URL = "films/danh-sach/phim-dang-chieu"
+            override val GET_DETAIL_URL = "film/"
+            override val GET_CUSTOM_HEAD = "films/danh-sach/"
+            override val SEARCH_HEAD = "films/search?keyword="
+            override val SEARCH_TAIL = "&sort_field=year"
+            override val IMAGE_BASE_URL = ""
         }
     }
 }
