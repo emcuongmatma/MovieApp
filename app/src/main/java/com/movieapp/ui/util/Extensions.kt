@@ -54,6 +54,9 @@ fun CustomMovieModel.fixImg(movieSourceManager: MovieSourceManager): CustomMovie
     }
     return movie
 }
+fun String.convertContent():String{
+    return if(this.contains("<p>")) this.removePrefix("<p>").split("</p>")[0] else this
+}
 
 fun List<CustomMovieModel>.filter(): List<CustomMovieModel> {
     val allowCategory = listOf(
