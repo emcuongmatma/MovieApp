@@ -1,6 +1,5 @@
 package com.movieapp.ui.movie_detail.composable
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -32,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -43,6 +40,7 @@ import com.movieapp.ui.theme.netflix_gray
 import com.movieapp.ui.theme.netflix_red
 import com.movieapp.ui.theme.netflix_white_15
 import com.movieapp.ui.theme.netflix_white_30
+import com.movieapp.ui.util.convertContent
 
 @Composable
 fun MovieDetails(
@@ -59,13 +57,14 @@ fun MovieDetails(
         modifier = Modifier
             .background(netflix_black)
             .fillMaxSize()
-            .padding(5.dp),
+            .padding(10.dp),
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         Text(
             text = state.movie.movie?.name.toString(),
             style = MaterialTheme.typography.titleLarge.copy(color = Color.White),
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(top = 5.dp)
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -116,11 +115,10 @@ fun MovieDetails(
         }
 
         Text(
-            text = state.movie.movie?.content.toString()
-                .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() },
+            text = state.movie.movie?.content.toString().convertContent(),
             style = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
-            maxLines = if (!isShowFull) 3 else Int.MAX_VALUE,
             textAlign = TextAlign.Justify,
+            maxLines = if (!isShowFull) 3 else Int.MAX_VALUE,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.clickable {
                 isShowFull = !isShowFull
