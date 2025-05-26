@@ -119,7 +119,7 @@ fun MovieSearchScreen(
                     }
                 }
                 is LoadStatus.Success -> {
-                    items(items = state.movieSearchList) {
+                    items(items = state.movieSearchList, key = {it-> it.slug}) {
                         MovieItem(
                             movie = it
                         ) { slug,source ->

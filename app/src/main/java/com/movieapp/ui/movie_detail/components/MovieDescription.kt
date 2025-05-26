@@ -165,7 +165,7 @@ fun MovieDetails(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 state = gridState
             ) {
-                items(items = state.movie.episodes[state.serverSelected].serverData) { item ->
+                items(items = state.movie.episodes[state.serverSelected].serverData, key = {item-> item.name!!}) { item ->
                     EpItem(
                         ep = item.name!!,
                         epSelected = state.epSelected

@@ -71,7 +71,7 @@ fun MovieRow(
                 }
             }
         } else {
-            items(count = if (list.size > 10) 10 else list.size) { index ->
+            items(count = if (list.size > 10) 10 else list.size , key = {index-> list[index].slug}) { index ->
                 MovieItem(
                     movie = list[index],
                     onItemSelected = { slug, source -> onItemSelected(slug, source) })
