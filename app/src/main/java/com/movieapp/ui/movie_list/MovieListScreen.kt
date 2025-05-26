@@ -5,6 +5,7 @@ package com.movieapp.ui.movie_list
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -44,18 +47,21 @@ fun MovieListScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color.Black)
-            .statusBarsPadding()
+            .statusBarsPadding(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
             painter = painterResource(painterSource),
             contentDescription = null,
             modifier = Modifier
+                .size(width = 200.dp, height = 80.dp)
                 .fillMaxWidth()
-                .size(60.dp)
-                .clickable {
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }) {
                     onSourceClicked()
                 },
-            contentScale = ContentScale.FillHeight
+            contentScale = ContentScale.FillWidth
         )
         SwipeRefresh(
             state = rememberSwipeRefreshState(mainState.isRefreshing),
@@ -65,18 +71,16 @@ fun MovieListScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = Color.Black)
-                .statusBarsPadding()
-                .padding(top = 10.dp, start = 5.dp, end = 5.dp)
+                .padding(start = 5.dp, end = 5.dp)
         ) {
             LazyColumn(
                 modifier = Modifier
-                    .statusBarsPadding()
-                    .padding(top = 10.dp, bottom = 60.dp)
+                    .padding(bottom = 60.dp)
                     .fillMaxWidth()
                     .background(color = Color.Black),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                item {
+                item(key = "mcn"){
                     MovieRow(
                         text = "Phim mới cập nhật",
                         list = mainState.recentlyUpdateList,
@@ -85,7 +89,7 @@ fun MovieListScreen(
                         },
                         onMoreClicked = { onMoreClicked("phim-moi-cap-nhat") })
                 }
-                item {
+                item(key = "pbm"){
                     MovieRow(
                         text = "Phim bộ mới",
                         list = mainState.newSeriesList,
@@ -94,7 +98,7 @@ fun MovieListScreen(
                         },
                         onMoreClicked = { onMoreClicked("phim-bo") })
                 }
-                item {
+                item(key = "plm"){
                     MovieRow(
                         text = "Phim lẻ mới",
                         list = mainState.newStandaloneFilmList,
@@ -103,7 +107,7 @@ fun MovieListScreen(
                         },
                         onMoreClicked = { onMoreClicked("phim-le") })
                 }
-                item {
+                item(key = "tvs"){
                     MovieRow(
                         text = "TV Shows",
                         list = mainState.newTvShowList,
