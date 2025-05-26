@@ -58,7 +58,6 @@ class MovieDetailViewModel
         _state.value.movie.episodes?.let {
             videoItems = it.map { servers ->
                 servers.serverData.map { ep ->
-                    Log.e("123",servers.serverData.toString() + ep.name.toString())
                     MediaItem.Builder().setUri(ep.linkM3u8).setTag(ep.name).setMediaId(ep.name!!)
                         .setMimeType(MimeTypes.APPLICATION_M3U8).build()
                 }
