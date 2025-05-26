@@ -1,6 +1,6 @@
 package com.movieapp.ui.movie_detail
 
-import android.util.Log
+
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
