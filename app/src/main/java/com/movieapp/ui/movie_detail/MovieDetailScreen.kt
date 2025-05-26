@@ -25,8 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.movieapp.ui.movie_detail.composable.CustomCircularProgress
-import com.movieapp.ui.movie_detail.composable.MovieDetails
+import com.movieapp.ui.movie_detail.components.CustomCircularProgress
+import com.movieapp.ui.movie_detail.components.MovieDetails
 import com.movieapp.ui.movie_detail.videoplayer.VideoPlayer
 import com.movieapp.ui.theme.netflix_red
 import com.movieapp.ui.theme.netflix_red2

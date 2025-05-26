@@ -25,7 +25,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.movieapp.R
 import com.movieapp.data.datasource.remote.MovieSourceManager
-import com.movieapp.ui.movie_list.composable.MovieRow
+import com.movieapp.ui.movie_list.components.MovieRow
 
 @Composable
 fun MovieListScreen(

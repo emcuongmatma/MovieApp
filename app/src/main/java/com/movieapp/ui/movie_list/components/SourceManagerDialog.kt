@@ -1,4 +1,4 @@
-package com.movieapp.ui.movie_list.composable
+package com.movieapp.ui.movie_list.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

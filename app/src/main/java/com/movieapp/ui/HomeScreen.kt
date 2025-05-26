@@ -52,7 +52,7 @@ import com.movieapp.ui.movie_fav.MovieFavScreen
 import com.movieapp.ui.movie_list.MovieListByType
 import com.movieapp.ui.movie_list.MovieListViewModel
 import com.movieapp.ui.movie_list.MovieListScreen
-import com.movieapp.ui.movie_list.composable.SourceManagerDialog
+import com.movieapp.ui.movie_list.components.SourceManagerDialog
 import com.movieapp.ui.movie_search.MovieSearchScreen
 import com.movieapp.ui.theme.netflix_black
 import com.movieapp.ui.theme.netflix_gray

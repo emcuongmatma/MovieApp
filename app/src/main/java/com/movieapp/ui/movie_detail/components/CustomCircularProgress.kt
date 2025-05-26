@@ -1,4 +1,4 @@
-package com.movieapp.ui.movie_detail.composable
+package com.movieapp.ui.movie_detail.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

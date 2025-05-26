@@ -35,8 +35,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.movieapp.ui.movie_detail.composable.CustomCircularProgress
-import com.movieapp.ui.movie_list.composable.MovieItem
+import com.movieapp.ui.movie_detail.components.CustomCircularProgress
+import com.movieapp.ui.movie_list.components.MovieItem
 import com.movieapp.ui.theme.netflix_gray_2
 import com.movieapp.ui.theme.searchbar_background
 import com.movieapp.ui.util.LoadStatus

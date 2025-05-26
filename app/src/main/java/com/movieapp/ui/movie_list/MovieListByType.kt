@@ -29,8 +29,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.movieapp.data.model.custom.CustomMovieModel
-import com.movieapp.ui.movie_detail.composable.CustomCircularProgress
-import com.movieapp.ui.movie_list.composable.MovieItem
+import com.movieapp.ui.movie_detail.components.CustomCircularProgress
+import com.movieapp.ui.movie_list.components.MovieItem
 import com.movieapp.ui.util.LoadStatus
 
 @Composable
