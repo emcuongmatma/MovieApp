@@ -13,7 +13,7 @@ Movie Streaming android app built with Jetpack Compose, Hilt, Coroutines, Flow, 
   <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_20250326_074230.png" />
  <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_20250326_074318.png" />
   <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_20250326_074353.png" />
-  <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_20250326_074455.png" />
+  <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_20250530-092938.png" />
   <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_2025-05-04-161047.jpg" />
 </p>
 
