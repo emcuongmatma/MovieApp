@@ -73,35 +73,7 @@ class MovieListViewModel @Inject constructor(
             _state.update { it.copy(isRefreshing = false,status = LoadStatus.Success()) }
         }
     }
-    private fun clearList() {
-        _state.update {
-            it.copy(
-                recentlyUpdateList = emptyList(),
-                newSeriesList = emptyList(),
-                newStandaloneFilmList = emptyList(),
-                newTvShowList = emptyList(),
-                currentPageS = 1,
-                currentPageR = 1,
-                currentPageF = 1,
-                currentPageT = 1
-            )
-        }
-    }
-    fun onClear(string: String){
-        viewModelScope.launch(Dispatchers.IO){
-            when(string){
-                "r" -> {
-                    movieDao.delRnF()
-                    movieDao.updateRaF()
-                }
-                "f" -> {
-                    movieDao.delFnR()
-                    movieDao.updateFaR()
-                }
-            }
-            loadFavMovies()
-        }
-    }
+
     private fun getRecentlyUpdate() =
         viewModelScope.launch(Dispatchers.IO) {
             apiRepository.getRecentlyUpdateMovie(_state.value.currentPageR)
@@ -168,6 +140,63 @@ class MovieListViewModel @Inject constructor(
             }
         }
     }
+
+    fun getMoreResult() {
+        _state.value = _state.value.copy(status = LoadStatus.Loading())
+        when (_state.value.typeSlug) {
+            "phim-moi-cap-nhat" -> {
+                _state.value = _state.value.copy(currentPageR = _state.value.currentPageR + 1)
+                getRecentlyUpdate()
+            }
+            "phim-bo" -> {
+                _state.value = _state.value.copy(currentPageS = _state.value.currentPageS + 1)
+                getCustomMovie("phim-bo",_state.value.currentPageS)
+            }
+            "phim-le" -> {
+                _state.value = _state.value.copy(currentPageF = _state.value.currentPageF + 1)
+                getCustomMovie("phim-le",_state.value.currentPageF)
+            }
+            "tv-shows" -> {
+                _state.value = _state.value.copy(currentPageT = _state.value.currentPageT + 1)
+                getCustomMovie("tv-shows",_state.value.currentPageT)
+            }
+            else -> {
+                setToast("Lỗi ${_state.value.typeSlug}")
+            }
+        }
+    }
+
+    private fun clearList() {
+        _state.update {
+            it.copy(
+                recentlyUpdateList = emptyList(),
+                newSeriesList = emptyList(),
+                newStandaloneFilmList = emptyList(),
+                newTvShowList = emptyList(),
+                currentPageS = 1,
+                currentPageR = 1,
+                currentPageF = 1,
+                currentPageT = 1
+            )
+        }
+    }
+    fun onClear(string: String){
+        viewModelScope.launch(Dispatchers.IO){
+            when(string){
+                "r" -> {
+                    movieDao.delRnF()
+                    movieDao.updateRaF()
+                }
+                "f" -> {
+                    movieDao.delFnR()
+                    movieDao.updateFaR()
+                }
+            }
+            loadFavMovies()
+        }
+    }
+
+
     private fun setToast(err: String) {
         _state.update {
             it.copy(
@@ -193,30 +222,7 @@ class MovieListViewModel @Inject constructor(
             )
         }
     }
-    fun getMoreResult() {
-        _state.value = _state.value.copy(status = LoadStatus.Loading())
-        when (_state.value.typeSlug) {
-            "phim-moi-cap-nhat" -> {
-                _state.value = _state.value.copy(currentPageR = _state.value.currentPageR + 1)
-                getRecentlyUpdate()
-            }
-            "phim-bo" -> {
-                _state.value = _state.value.copy(currentPageS = _state.value.currentPageS + 1)
-                getCustomMovie("phim-bo",_state.value.currentPageS)
-            }
-            "phim-le" -> {
-                _state.value = _state.value.copy(currentPageF = _state.value.currentPageF + 1)
-                getCustomMovie("phim-le",_state.value.currentPageF)
-            }
-            "tv-shows" -> {
-                _state.value = _state.value.copy(currentPageT = _state.value.currentPageT + 1)
-                getCustomMovie("tv-shows",_state.value.currentPageT)
-            }
-            else -> {
-                setToast("Lỗi ${_state.value.typeSlug}")
-            }
-        }
-    }
+
 
     fun isGridListOpen(boolean: Boolean) {
         _state.update { it.copy(isOpenGridList = boolean) }

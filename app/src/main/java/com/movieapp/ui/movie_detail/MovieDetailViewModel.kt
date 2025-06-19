@@ -54,37 +54,6 @@ class MovieDetailViewModel
         })
     }
 
-    private fun loadListVideo() {
-        _state.value.movie.episodes?.let {
-            videoItems = it.map { servers ->
-                servers.serverData.map { ep ->
-                    MediaItem.Builder().setUri(ep.linkM3u8).setTag(ep.name).setMediaId(ep.name!!)
-                        .setMimeType(MimeTypes.APPLICATION_M3U8).build()
-                }
-            }.toMutableStateList()
-            if (_state.value.resume.resume.isNotEmpty()) {
-                val svEp = _state.value.resume.resume.split(":")
-                _state.value = _state.value.copy(
-                    serverSelected = svEp[0].toInt(),
-                    epSelected = svEp[1]
-                )
-            } else {
-                _state.value = _state.value.copy(
-                    epSelected = videoItems[0].first().mediaId
-                )
-            }
-            playVideo(true)
-        }
-    }
-
-    private fun playVideo(resume: Boolean) {
-        player.playWhenReady = true
-        player.setMediaItem(videoItems[_state.value.serverSelected].find { it.mediaId == _state.value.epSelected }!!)
-        if (resume && _state.value.resume.resumePositionMs > 0L)
-            player.seekTo(_state.value.resume.resumePositionMs)
-        player.play()
-    }
-
     fun getMovieDetail() {
         viewModelScope.launch {
             _state.update { it.copy(status = LoadStatus.Loading()) }
@@ -137,6 +106,39 @@ class MovieDetailViewModel
             }
         }
     }
+
+    private fun loadListVideo() {
+        _state.value.movie.episodes?.let {
+            videoItems = it.map { servers ->
+                servers.serverData.map { ep ->
+                    MediaItem.Builder().setUri(ep.linkM3u8).setTag(ep.name).setMediaId(ep.name!!)
+                        .setMimeType(MimeTypes.APPLICATION_M3U8).build()
+                }
+            }.toMutableStateList()
+            if (_state.value.resume.resume.isNotEmpty()) {
+                val svEp = _state.value.resume.resume.split(":")
+                _state.value = _state.value.copy(
+                    serverSelected = svEp[0].toInt(),
+                    epSelected = svEp[1]
+                )
+            } else {
+                _state.value = _state.value.copy(
+                    epSelected = videoItems[0].first().mediaId
+                )
+            }
+            playVideo(true)
+        }
+    }
+
+    private fun playVideo(resume: Boolean) {
+        player.playWhenReady = true
+        player.setMediaItem(videoItems[_state.value.serverSelected].find { it.mediaId == _state.value.epSelected }!!)
+        if (resume && _state.value.resume.resumePositionMs > 0L)
+            player.seekTo(_state.value.resume.resumePositionMs)
+        player.play()
+    }
+
+
 
     fun addFavMovie() {
         viewModelScope.launch {
