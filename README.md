@@ -7,6 +7,7 @@
 <a href="https://github.com/ecmm"><img alt="License" src="https://img.shields.io/static/v1?label=GitHub&message=ecmm&color=C51162"/></a>
 
 Movie Streaming android app built with Jetpack Compose, Hilt, Coroutines, Flow, ViewModel based on MVVM architecture recommended by Google. It offers a clean, scalable, and maintainable codebase for Android development [KKPhim API](https://kkphim.com/) [OPhim API](https://ophim17.cc/) [NguonC API](https://phim.nguonc.com/). </br>
+<p>Experiencing slow speeds? Consider using a VPN to potentially improve your connection.</p>
 
 
 <p align="center">
