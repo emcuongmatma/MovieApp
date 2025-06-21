@@ -53,7 +53,7 @@ class MovieSearchViewModel @Inject constructor(
             )
         }
         job?.cancel()
-        _state.value = _state.value.copy(status = LoadStatus.Loading())
+        _state.update { it.copy(status = LoadStatus.Loading()) }
         job =  getMovieDetailByName()
     }
 

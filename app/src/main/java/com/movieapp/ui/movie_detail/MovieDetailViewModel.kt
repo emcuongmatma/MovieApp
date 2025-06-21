@@ -49,7 +49,7 @@ class MovieDetailViewModel
         player.playWhenReady = true
         player.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
-                _state.value = _state.value.copy(isPlaying = isPlaying)
+                _state.update { it.copy(isPlaying = isPlaying)  }
             }
         })
     }
@@ -60,15 +60,11 @@ class MovieDetailViewModel
             movieDao.getResume(
                 _state.value.slug,
                 movieSourceManager.currentSource.value.index
-            )?.let {
-                _state.value = _state.value.copy(
-                    resume = it
-                )
+            )?.let { isResume->
+                _state.update { it.copy(resume = isResume)  }
             }
-            movieDao.getFav(_state.value.slug)?.let {
-                _state.value = _state.value.copy(
-                    isFav = it
-                )
+            movieDao.getFav(_state.value.slug)?.let { isFav->
+                _state.update { it.copy(isFav = isFav) }
             }
             val result =
                 if (movieSourceManager.currentSource.value is MovieSourceManager.MovieSource.NguonC) {
@@ -117,14 +113,18 @@ class MovieDetailViewModel
             }.toMutableStateList()
             if (_state.value.resume.resume.isNotEmpty()) {
                 val svEp = _state.value.resume.resume.split(":")
-                _state.value = _state.value.copy(
-                    serverSelected = svEp[0].toInt(),
-                    epSelected = svEp[1]
-                )
+                _state.update {
+                    it.copy(
+                        serverSelected = svEp[0].toInt(),
+                        epSelected = svEp[1]
+                    )
+                }
             } else {
-                _state.value = _state.value.copy(
-                    epSelected = videoItems[0].first().mediaId
-                )
+                _state.update {
+                    it.copy(
+                        epSelected = videoItems[0].first().mediaId
+                    )
+                }
             }
             playVideo(true)
         }
@@ -148,7 +148,7 @@ class MovieDetailViewModel
                     source = movieSourceManager.currentSource.value.index
                 ).fixImg(movieSourceManager)
             )
-            _state.value = _state.value.copy(isFav = !_state.value.isFav)
+            _state.update { it.copy(isFav = !_state.value.isFav) }
         }
     }
 
@@ -163,7 +163,7 @@ class MovieDetailViewModel
                         source = movieSourceManager.currentSource.value.index,
                         isFav = _state.value.isFav,
                         resume = "${_state.value.serverSelected}:${_state.value.epSelected}",
-                        resumePositionMs = player.currentPosition,
+                        resumePositionMs = if(player.currentPosition-5000> 0) player.currentPosition-5000 else 0 ,
                         durationMs = player.duration
                     ).fixImg(movieSourceManager)
                 )
