@@ -24,7 +24,7 @@ class MovieSourceManager {
         data object KKPhim : MovieSource() {
             override val index = 0
             override val BASE_URL = "https://phimapi.com/"
-            override val ADD_RECENTLY_URL = "danh-sach/phim-moi-cap-nhat"
+            override val ADD_RECENTLY_URL = "danh-sach/phim-moi-cap-nhat-v3"
             override val GET_DETAIL_URL = "phim/"
             override val GET_CUSTOM_HEAD = "v1/api/danh-sach/"
             override val SEARCH_HEAD = "/v1/api/tim-kiem?keyword="
