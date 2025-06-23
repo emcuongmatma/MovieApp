@@ -57,12 +57,16 @@ class MovieListViewModel @Inject constructor(
         _state.update { it.copy(status = LoadStatus.Loading(), isRefreshing = true) }
         fetchJob = viewModelScope.launch(Dispatchers.IO) {
             try {
-                val recentList = async { getRecentlyUpdate(_state.value.currentPageR) }.await()
-                val phimBoList =
-                    async { getCustomMovie("phim-bo", _state.value.currentPageS) }.await()
-                val phimLeList =
-                    async { getCustomMovie("phim-le", _state.value.currentPageF) }.await()
-                val tvList = async { getCustomMovie("tv-shows", _state.value.currentPageT) }.await()
+                val fetchRecentList = async { getRecentlyUpdate(_state.value.currentPageR) }
+                val fetchPhimBoList =
+                    async { getCustomMovie("phim-bo", _state.value.currentPageS) }
+                val fetchPhimLeList =
+                    async { getCustomMovie("phim-le", _state.value.currentPageF) }
+                val fetchTvList = async { getCustomMovie("tv-shows", _state.value.currentPageT) }
+                val recentList = fetchRecentList.await()
+                val phimBoList = fetchPhimBoList.await()
+                val phimLeList = fetchPhimLeList.await()
+                val tvList = fetchTvList.await()
                 _state.update {
                     it.copy(
                         recentlyUpdateList = it.recentlyUpdateList + recentList,
@@ -152,7 +156,7 @@ class MovieListViewModel @Inject constructor(
                 "phim-moi-cap-nhat" -> {
                     _state.update {
                         it.copy(
-                            recentlyUpdateList = it.recentlyUpdateList + getRecentlyUpdate(_state.value.currentPageR+1),
+                            recentlyUpdateList = it.recentlyUpdateList + getRecentlyUpdate(_state.value.currentPageR + 1),
                             currentPageR = _state.value.currentPageR + 1,
                             status = LoadStatus.Success()
                         )
@@ -162,7 +166,10 @@ class MovieListViewModel @Inject constructor(
                 "phim-bo" -> {
                     _state.update {
                         it.copy(
-                            newSeriesList = it.newSeriesList + getCustomMovie("phim-bo", _state.value.currentPageS+1),
+                            newSeriesList = it.newSeriesList + getCustomMovie(
+                                "phim-bo",
+                                _state.value.currentPageS + 1
+                            ),
                             currentPageS = _state.value.currentPageS + 1,
                             status = LoadStatus.Success()
                         )
@@ -172,16 +179,23 @@ class MovieListViewModel @Inject constructor(
                 "phim-le" -> {
                     _state.update {
                         it.copy(
-                            newStandaloneFilmList = it.newStandaloneFilmList + getCustomMovie("phim-le", _state.value.currentPageF+1),
+                            newStandaloneFilmList = it.newStandaloneFilmList + getCustomMovie(
+                                "phim-le",
+                                _state.value.currentPageF + 1
+                            ),
                             currentPageF = _state.value.currentPageF + 1,
                             status = LoadStatus.Success()
                         )
                     }
                 }
+
                 "tv-shows" -> {
                     _state.update {
                         it.copy(
-                            newTvShowList = it.newTvShowList + getCustomMovie("tv-shows", _state.value.currentPageT+1),
+                            newTvShowList = it.newTvShowList + getCustomMovie(
+                                "tv-shows",
+                                _state.value.currentPageT + 1
+                            ),
                             currentPageT = _state.value.currentPageT + 1,
                             status = LoadStatus.Success()
                         )
