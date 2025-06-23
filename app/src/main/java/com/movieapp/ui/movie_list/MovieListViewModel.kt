@@ -9,7 +9,6 @@ import com.movieapp.data.repository.remote.ApiRepository
 import com.movieapp.ui.util.LoadStatus
 import com.movieapp.ui.util.Screen
 import com.movieapp.ui.util.converter
-import com.movieapp.ui.util.filter
 import com.movieapp.ui.util.toListMovie
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onSuccess
@@ -40,7 +39,7 @@ class MovieListViewModel @Inject constructor(
     }
 
     private fun observeMovieSource() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             movieSourceManager.currentSource.collect { newSource ->
                 _state.update {
                     it.copy(
@@ -55,7 +54,7 @@ class MovieListViewModel @Inject constructor(
     fun fetchAllMovies() {
         fetchJob?.cancel()
         clearList()
-        _state.update { it.copy(status = LoadStatus.Loading()) }
+        _state.update { it.copy(status = LoadStatus.Loading(), isRefreshing = true) }
         fetchJob = viewModelScope.launch(Dispatchers.IO) {
             try {
                 val recentList = async { getRecentlyUpdate(_state.value.currentPageR) }.await()
@@ -70,10 +69,10 @@ class MovieListViewModel @Inject constructor(
                         newSeriesList = it.newSeriesList + phimBoList,
                         newStandaloneFilmList = it.newStandaloneFilmList + phimLeList,
                         newTvShowList = it.newTvShowList + tvList,
+                        isRefreshing = false,
                         status = LoadStatus.Success()
                     )
                 }
-                _state.update { it.copy(status = LoadStatus.Success()) }
             } catch (e: CancellationException) {
                 println("FetchAllMovies bị huỷ $e")
             } catch (e: Exception) {
@@ -94,10 +93,11 @@ class MovieListViewModel @Inject constructor(
             _state.update {
                 it.copy(
                     resMovieList = movieDao.getAllResMovie().reversed(),
-                    favMovieList = movieDao.getAllFavMovie().reversed()
+                    favMovieList = movieDao.getAllFavMovie().reversed(),
+                    isRefreshing = false,
+                    status = LoadStatus.Success()
                 )
             }
-            _state.update { it.copy(isRefreshing = false, status = LoadStatus.Success()) }
         }
     }
 
@@ -107,7 +107,6 @@ class MovieListViewModel @Inject constructor(
             .onSuccess {
                 resultList =
                     data.items.orEmpty()
-                        .filter()
                         .converter(movieSourceManager)
             }
             .onError {
