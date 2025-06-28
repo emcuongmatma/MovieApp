@@ -33,6 +33,11 @@ Movie Streaming android app built with Jetpack Compose, Hilt, Coroutines, Flow, 
   - TV Series Search
   - TV Series Detail
 - Bottom navigation
+- BottomSheetScaffold
+- BackHandler
+- PIP
+- MediaSession
+- PlayerNotificationManager
 - Continue watching 
 - Mark as Favourite
 <!-- - Network connection state with SnackBar -->
@@ -42,9 +47,11 @@ Movie Streaming android app built with Jetpack Compose, Hilt, Coroutines, Flow, 
 - [Kotlin](https://kotlinlang.org/) - First class and official programming language for Android development.
 - [Jetpack Compose](https://developer.android.com/jetpack/compose) - Jetpack Compose is Android’s modern toolkit for building native UI.
 - [Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) - For asynchronous and more..
+- [Coil](https://coil-kt.github.io/coil/) - An image loading library for Android and Compose Multiplatform.
+- [MediaSession](https://developer.android.com/media/media3/session/control-playback) - Media sessions provide a universal way of interacting with an audio or video player.
+- [PlayerNotificationManager](https://developer.android.com/reference/kotlin/androidx/media3/ui/PlayerNotificationManager)
 - [Flow](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/) - A cold asynchronous data stream that sequentially emits values and completes normally or with an exception.
 - [Android Architecture Components](https://developer.android.com/topic/libraries/architecture) - Collection of libraries that help you design robust, testable, and maintainable apps.
-  - [LiveData](https://developer.android.com/topic/libraries/architecture/livedata) - Data objects that notify views when the underlying database changes.
   - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) - Stores UI-related data that isn't destroyed on UI changes.
 - [Dependency Injection](https://developer.android.com/training/dependency-injection)
   - [Hilt](https://dagger.dev/hilt) - Easier way to incorporate Dagger DI into Android apps.
