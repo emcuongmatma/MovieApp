@@ -1,4 +1,4 @@
-# Movie World (Jetpack Compose) 
+# Movie App (Jetpack Compose) 
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-%230075FF.svg)](https://developer.android.com/jetpack/compose)
 ![badge-Android](https://img.shields.io/badge/Platform-Android-brightgreen)
 [![API](https://img.shields.io/badge/API-28%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=28)
