@@ -18,11 +18,17 @@ interface MovieDao {
     @Query("Select * From movies Where isResume = 1")
     suspend fun getAllResMovie():List<CustomMovieModel>
 
+    @Query("Select * From movies Where isRecentlySearch = 1")
+    suspend fun getRecentlySearch():List<CustomMovieModel>
+
     @Query("Select resume,resumePositionMs,durationMs From movies Where slug = :slug AND source = :source ")
     suspend fun getResume(slug:String,source:Int): ResumeMovieDetail?
 
     @Query("Select isFav From movies Where slug = :slug")
     suspend fun getFav(slug:String): Boolean?
+
+    @Query("Select isRecentlySearch From movies Where slug = :slug")
+    suspend fun getRecentlySearch(slug:String): Boolean?
 
     @Delete
     fun deleteMovie(vararg users: CustomMovieModel)
