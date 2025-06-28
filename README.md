@@ -35,7 +35,7 @@ Movie Streaming android app built with Jetpack Compose, Hilt, Coroutines, Flow, 
 - Bottom navigation
 - BottomSheetScaffold
 - BackHandler
-- PIP
+- Picture-In-Picture
 - MediaSession
 - PlayerNotificationManager
 - Continue watching 
