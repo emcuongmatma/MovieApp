@@ -3,9 +3,7 @@ package com.movieapp.ui.util
 import com.movieapp.data.datasource.remote.MovieSourceManager
 import com.movieapp.data.model.custom.CustomMovieModel
 import com.movieapp.data.model.custom.CustomMovieResponseModel
-import kotlin.collections.all
-import kotlin.collections.contains
-import kotlin.text.contains
+import com.movieapp.data.model.moviedetail.MovieDetailModel
 
 fun CustomMovieResponseModel.toListMovie(movieSourceManager: MovieSourceManager): List<CustomMovieModel> {
     val list: List<CustomMovieModel> = when (movieSourceManager.currentSource.value) {
@@ -30,13 +28,13 @@ fun CustomMovieResponseModel.toListMovie(movieSourceManager: MovieSourceManager)
     return list
 }
 
-fun List<CustomMovieModel>.converter(movieSourceManager: MovieSourceManager): List<CustomMovieModel> {
-    val list: List<CustomMovieModel> =
-        this.filter().map { item ->
-            item.fixImg(movieSourceManager)
-        }
-    return list
-}
+//fun List<CustomMovieModel>.converter(movieSourceManager: MovieSourceManager): List<CustomMovieModel> {
+//    val list: List<CustomMovieModel> =
+//        this.filter().map { item ->
+//            item.fixImg(movieSourceManager)
+//        }
+//    return list
+//}
 
 fun CustomMovieModel.fixImg(movieSourceManager: MovieSourceManager): CustomMovieModel {
     val movie = when (movieSourceManager.currentSource.value) {
@@ -54,6 +52,23 @@ fun CustomMovieModel.fixImg(movieSourceManager: MovieSourceManager): CustomMovie
     }
     return movie
 }
+fun MovieDetailModel.fixImg(movieSourceManager: MovieSourceManager): MovieDetailModel {
+    val movie = when (movieSourceManager.currentSource.value) {
+        is MovieSourceManager.MovieSource.KKPhim -> {
+            this.copy(posterUrl = if (!this.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + this.posterUrl else this.posterUrl)
+        }
+
+        is MovieSourceManager.MovieSource.Ophim -> {
+            this.copy(posterUrl = if (!this.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + this.thumbUrl else this.thumbUrl)
+        }
+
+        is MovieSourceManager.MovieSource.NguonC -> {
+            this.copy(posterUrl = if (!this.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + this.thumbUrl else this.thumbUrl)
+        }
+    }
+    return movie
+}
+
 fun String.convertContent():String{
     return if(this.contains("<p>")) this.removePrefix("<p>").removeSuffix("</p>") else this
 }
