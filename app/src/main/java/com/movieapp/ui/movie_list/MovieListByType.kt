@@ -45,8 +45,9 @@ fun MovieListByType(
         onExit()
     }
     val title: String = when (state.typeSlug) {
-        "phim-moi-cap-nhat" -> "Phim mới cập nhật"
-        "phim-bo" -> "Phim bộ"
+        "phim-bo-hq" -> "Phim Hàn Quốc mới"
+        "phim-bo-tq" -> "Phim Trung Quốc mới"
+        "phim-bo-usuk" -> "Phim US-UK mới"
         "phim-le" -> "Phim lẻ"
         "tv-shows" -> "Tv Shows"
         "lich-su" -> "Lịch sử xem"
@@ -54,12 +55,17 @@ fun MovieListByType(
         else -> ""
     }
     val list: List<CustomMovieModel> = when (state.typeSlug) {
-        "phim-moi-cap-nhat" -> {
-            state.recentlyUpdateList
+
+        "phim-bo-hq" -> {
+            state.newKRSeriesList
         }
 
-        "phim-bo" -> {
-            state.newSeriesList
+        "phim-bo-tq" -> {
+            state.newCNSeriesList
+        }
+
+        "phim-bo-usuk" -> {
+            state.newUSUKSeriesList
         }
 
         "phim-le" -> {
