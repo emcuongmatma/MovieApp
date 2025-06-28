@@ -8,7 +8,6 @@ import com.movieapp.data.model.custom.CustomMovieModel
 import com.movieapp.data.repository.remote.ApiRepository
 import com.movieapp.ui.util.LoadStatus
 import com.movieapp.ui.util.Screen
-import com.movieapp.ui.util.converter
 import com.movieapp.ui.util.toListMovie
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onSuccess
@@ -57,20 +56,26 @@ class MovieListViewModel @Inject constructor(
         _state.update { it.copy(status = LoadStatus.Loading(), isRefreshing = true) }
         fetchJob = viewModelScope.launch(Dispatchers.IO) {
             try {
-                val fetchRecentList = async { getRecentlyUpdate(_state.value.currentPageR) }
-                val fetchPhimBoList =
-                    async { getCustomMovie("phim-bo", _state.value.currentPageS) }
+                val fetchPhimBoHQList =
+                    async { getCustomMovie("phim-bo", _state.value.currentPageS, "han-quoc") }
+                val fetchPhimBoTQList =
+                    async { getCustomMovie("phim-bo", _state.value.currentPageS, "trung-quoc") }
+                val fetchPhimBoUSUKList =
+                    async { getCustomMovie("phim-bo", _state.value.currentPageS, "au-my") }
                 val fetchPhimLeList =
-                    async { getCustomMovie("phim-le", _state.value.currentPageF) }
-                val fetchTvList = async { getCustomMovie("tv-shows", _state.value.currentPageT) }
-                val recentList = fetchRecentList.await()
-                val phimBoList = fetchPhimBoList.await()
+                    async { getCustomMovie("phim-le", _state.value.currentPageF, "") }
+                val fetchTvList =
+                    async { getCustomMovie("tv-shows", _state.value.currentPageT, "") }
+                val phimBoHQList = fetchPhimBoHQList.await()
+                val phimBoTQList = fetchPhimBoTQList.await()
+                val phimBoUSUKList = fetchPhimBoUSUKList.await()
                 val phimLeList = fetchPhimLeList.await()
                 val tvList = fetchTvList.await()
                 _state.update {
                     it.copy(
-                        recentlyUpdateList = it.recentlyUpdateList + recentList,
-                        newSeriesList = it.newSeriesList + phimBoList,
+                        newKRSeriesList = it.newKRSeriesList + phimBoHQList,
+                        newCNSeriesList = it.newCNSeriesList + phimBoTQList,
+                        newUSUKSeriesList = it.newUSUKSeriesList + phimBoUSUKList,
                         newStandaloneFilmList = it.newStandaloneFilmList + phimLeList,
                         newTvShowList = it.newTvShowList + tvList,
                         isRefreshing = false,
@@ -105,23 +110,27 @@ class MovieListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getRecentlyUpdate(currentPage: Int): List<CustomMovieModel> {
-        var resultList: List<CustomMovieModel> = emptyList()
-        apiRepository.getRecentlyUpdateMovie(currentPage)
-            .onSuccess {
-                resultList =
-                    data.items.orEmpty()
-                        .converter(movieSourceManager)
-            }
-            .onError {
-                setToast(this.payload.toString())
-            }
-        return resultList
-    }
+//    private suspend fun getRecentlyUpdate(currentPage: Int): List<CustomMovieModel> {
+//        var resultList: List<CustomMovieModel> = emptyList()
+//        apiRepository.getRecentlyUpdateMovie(currentPage)
+//            .onSuccess {
+//                resultList =
+//                    data.items.orEmpty()
+//                        .converter(movieSourceManager)
+//            }
+//            .onError {
+//                setToast(this.payload.toString())
+//            }
+//        return resultList
+//    }
 
-    private suspend fun getCustomMovie(type: String, currentPage: Int): List<CustomMovieModel> {
+    private suspend fun getCustomMovie(
+        type: String,
+        currentPage: Int,
+        country: String
+    ): List<CustomMovieModel> {
         var resultList: List<CustomMovieModel> = emptyList()
-        apiRepository.getCustomMovie(type, currentPage)
+        apiRepository.getCustomMovie(type, currentPage, country)
             .onSuccess {
                 resultList = data.toListMovie(
                     movieSourceManager
@@ -153,22 +162,51 @@ class MovieListViewModel @Inject constructor(
         _state.update { it.copy(status = LoadStatus.Loading()) }
         viewModelScope.launch(Dispatchers.IO) {
             when (_state.value.typeSlug) {
-                "phim-moi-cap-nhat" -> {
+//                "phim-moi-cap-nhat" -> {
+//                    _state.update {
+//                        it.copy(
+//                            recentlyUpdateList = it.recentlyUpdateList + getRecentlyUpdate(_state.value.currentPageR + 1),
+//                            currentPageR = _state.value.currentPageR + 1,
+//                            status = LoadStatus.Success()
+//                        )
+//                    }
+//                }
+
+                "phim-bo-tq" -> {
                     _state.update {
                         it.copy(
-                            recentlyUpdateList = it.recentlyUpdateList + getRecentlyUpdate(_state.value.currentPageR + 1),
-                            currentPageR = _state.value.currentPageR + 1,
+                            newCNSeriesList = it.newCNSeriesList + getCustomMovie(
+                                "phim-bo",
+                                _state.value.currentPageS + 1,
+                                "trung-quoc"
+                            ),
+                            currentPageS = _state.value.currentPageS + 1,
                             status = LoadStatus.Success()
                         )
                     }
                 }
 
-                "phim-bo" -> {
+                "phim-bo-hq" -> {
                     _state.update {
                         it.copy(
-                            newSeriesList = it.newSeriesList + getCustomMovie(
+                            newKRSeriesList = it.newKRSeriesList + getCustomMovie(
                                 "phim-bo",
-                                _state.value.currentPageS + 1
+                                _state.value.currentPageS + 1,
+                                "han-quoc"
+                            ),
+                            currentPageS = _state.value.currentPageS + 1,
+                            status = LoadStatus.Success()
+                        )
+                    }
+                }
+
+                "phim-bo-usuk" -> {
+                    _state.update {
+                        it.copy(
+                            newUSUKSeriesList = it.newUSUKSeriesList + getCustomMovie(
+                                "phim-bo",
+                                _state.value.currentPageS + 1,
+                                "au-my"
                             ),
                             currentPageS = _state.value.currentPageS + 1,
                             status = LoadStatus.Success()
@@ -181,7 +219,8 @@ class MovieListViewModel @Inject constructor(
                         it.copy(
                             newStandaloneFilmList = it.newStandaloneFilmList + getCustomMovie(
                                 "phim-le",
-                                _state.value.currentPageF + 1
+                                _state.value.currentPageF + 1,
+                                ""
                             ),
                             currentPageF = _state.value.currentPageF + 1,
                             status = LoadStatus.Success()
@@ -194,7 +233,8 @@ class MovieListViewModel @Inject constructor(
                         it.copy(
                             newTvShowList = it.newTvShowList + getCustomMovie(
                                 "tv-shows",
-                                _state.value.currentPageT + 1
+                                _state.value.currentPageT + 1,
+                                ""
                             ),
                             currentPageT = _state.value.currentPageT + 1,
                             status = LoadStatus.Success()
@@ -212,8 +252,9 @@ class MovieListViewModel @Inject constructor(
     private fun clearList() {
         _state.update {
             it.copy(
-                recentlyUpdateList = emptyList(),
-                newSeriesList = emptyList(),
+                newCNSeriesList = emptyList(),
+                newKRSeriesList = emptyList(),
+                newUSUKSeriesList = emptyList(),
                 newStandaloneFilmList = emptyList(),
                 newTvShowList = emptyList(),
                 currentPageS = 1,

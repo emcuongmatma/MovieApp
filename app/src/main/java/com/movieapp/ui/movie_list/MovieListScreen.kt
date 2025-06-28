@@ -80,27 +80,36 @@ fun MovieListScreen(
                     .background(color = Color.Black),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                item(key = "mcn"){
+                item(key = "pbhq"){
                     MovieRow(
-                        text = "Phim mới cập nhật",
-                        list = mainState.recentlyUpdateList,
+                        text = "Phim Hàn Quốc mới",
+                        list = mainState.newKRSeriesList,
                         onItemSelected = { slug, source ->
                             onItemSelected(slug)
                         },
-                        onMoreClicked = { onMoreClicked("phim-moi-cap-nhat") })
+                        onMoreClicked = { onMoreClicked("phim-bo-hq") })
                 }
-                item(key = "pbm"){
+                item(key = "pbtq"){
                     MovieRow(
-                        text = "Phim bộ mới",
-                        list = mainState.newSeriesList,
+                        text = "Phim Trung Quốc mới",
+                        list = mainState.newCNSeriesList,
                         onItemSelected = { slug, source ->
                             onItemSelected(slug)
                         },
-                        onMoreClicked = { onMoreClicked("phim-bo") })
+                        onMoreClicked = { onMoreClicked("phim-bo-tq") })
+                }
+                item(key = "pbusuk"){
+                    MovieRow(
+                        text = "Phim US-UK mới",
+                        list = mainState.newUSUKSeriesList,
+                        onItemSelected = { slug, source ->
+                            onItemSelected(slug)
+                        },
+                        onMoreClicked = { onMoreClicked("phim-bo-usuk") })
                 }
                 item(key = "plm"){
                     MovieRow(
-                        text = "Phim lẻ mới",
+                        text = "Phim lẻ",
                         list = mainState.newStandaloneFilmList,
                         onItemSelected = { slug, source ->
                             onItemSelected(slug)
@@ -115,6 +124,8 @@ fun MovieListScreen(
                             onItemSelected(slug)
                         },
                         onMoreClicked = { onMoreClicked("tv-shows") })
+                }
+                item{
                     Spacer(Modifier.height(20.dp))
                 }
             }

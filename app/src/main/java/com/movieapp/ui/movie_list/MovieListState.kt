@@ -8,8 +8,9 @@ import com.movieapp.ui.util.Screen
 
 
 data class MovieListState(
-    val recentlyUpdateList: List<CustomMovieModel> = emptyList(),
-    val newSeriesList:List<CustomMovieModel> = emptyList(),
+    val newCNSeriesList:List<CustomMovieModel> = emptyList(),
+    val newKRSeriesList:List<CustomMovieModel> = emptyList(),
+    val newUSUKSeriesList:List<CustomMovieModel> = emptyList(),
     val newStandaloneFilmList:List<CustomMovieModel> = emptyList(),
     val newTvShowList:List<CustomMovieModel> = emptyList(),
     var movieSource: MovieSourceManager.MovieSource = MovieSourceManager.MovieSource.KKPhim,
