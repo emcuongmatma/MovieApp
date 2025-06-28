@@ -35,6 +35,7 @@ data class CustomMovieModel(
     val category: List<CategoryModel>? = listOf(),
     val isFav: Boolean? = false,
     val isResume: Boolean? = false,
+    val isRecentlySearch: Boolean? = false,
     val resume:String="",
     val resumePositionMs:Long = 0L,
     val durationMs:Long = 0L,
