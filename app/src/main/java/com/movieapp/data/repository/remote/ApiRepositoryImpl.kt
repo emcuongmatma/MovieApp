@@ -19,8 +19,8 @@ class ApiRepositoryImpl(
         httpClient.getApiResponse(urlString = movieSourceManager.currentSource.value.GET_DETAIL_URL+ name)
     override suspend fun getMovieDetailNC(name: String): ApiResponse<NCMovieDetailResponeModel> =
         httpClient.getApiResponse(urlString = movieSourceManager.currentSource.value.GET_DETAIL_URL+ name)
-    override suspend fun getCustomMovie(type:String,page:Int): ApiResponse<CustomMovieResponseModel> =
-        httpClient.getApiResponse(urlString = movieSourceManager.currentSource.value.GET_CUSTOM_HEAD + type +"?page=${page}")
-    override suspend fun getMovieDetailByName(name: String): ApiResponse<CustomMovieResponseModel> =
-        httpClient.getApiResponse(urlString = movieSourceManager.currentSource.value.SEARCH_HEAD + name + movieSourceManager.currentSource.value.SEARCH_TAIL)
+    override suspend fun getCustomMovie(type:String,page:Int,country:String): ApiResponse<CustomMovieResponseModel> =
+        httpClient.getApiResponse(urlString = movieSourceManager.currentSource.value.GET_CUSTOM_HEAD + type +"?&country=${country}"+movieSourceManager.currentSource.value.SEARCH_TAIL+"&page=${page}")
+    override suspend fun getMovieDetailByName(name: String,page:Int): ApiResponse<CustomMovieResponseModel> =
+        httpClient.getApiResponse(urlString = movieSourceManager.currentSource.value.SEARCH_HEAD + name + movieSourceManager.currentSource.value.SEARCH_TAIL+"&page=${page}")
 }
