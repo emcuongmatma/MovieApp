@@ -10,17 +10,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -32,11 +28,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.movieapp.ui.movie_detail.components.CustomCircularProgress
-import com.movieapp.ui.movie_list.components.MovieItem
+import com.movieapp.ui.movie_search.components.movieSearchInit
+import com.movieapp.ui.movie_search.components.movieSearchResult
 import com.movieapp.ui.theme.netflix_gray_2
 import com.movieapp.ui.theme.searchbar_background
 import com.movieapp.ui.util.LoadStatus
@@ -105,39 +100,30 @@ fun MovieSearchScreen(
         ) {
             when (state.status) {
                 is LoadStatus.Init -> {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        Text(
-                            "Nhập từ khoá để tìm kiếm phim",
-                            style = MaterialTheme.typography.titleMedium.copy(netflix_gray_2),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-                is LoadStatus.Loading -> {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        CustomCircularProgress()
-                    }
-                }
-                is LoadStatus.Success -> {
-                    items(items = state.movieSearchList, key = {it-> it.slug}) {
-                        MovieItem(
-                            movie = it
-                        ) { slug,source ->
+                    movieSearchInit(
+                        state = state,
+                        onItemClicked = {
                             focusManager.clearFocus()
+                            onItemClicked(it)
+                        }
+                    )
+                }
+                else -> {
+                    movieSearchResult(
+                        state = state,
+                        onMoreResult = {
+                            viewModel.onMoreResult()
+                        },
+                        onItemSelected = { movie,slug->
+                            focusManager.clearFocus()
+                            viewModel.addSearchHistory(movie)
                             onItemClicked(slug)
                         }
-                    }
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        Text(
-                            "Không còn kết quả nào khác.",
-                            style = MaterialTheme.typography.titleMedium.copy(netflix_gray_2),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-                is LoadStatus.Error -> {
+                    )
                 }
             }
         }
     }
 }
+
+
