@@ -10,4 +10,6 @@ data class ServerDataModel(
     val linkM3u8: String? = "",
     @SerialName("name")
     val name: String? = "",
+    @SerialName("filename")
+    val filename: String? = "",
 )
