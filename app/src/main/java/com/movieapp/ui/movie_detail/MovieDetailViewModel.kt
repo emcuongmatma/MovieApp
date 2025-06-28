@@ -1,13 +1,19 @@
 package com.movieapp.ui.movie_detail
 
 
+
 import androidx.compose.runtime.toMutableStateList
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.MediaSession
+import androidx.media3.ui.PlayerNotificationManager
 import com.movieapp.data.datasource.local.dao.MovieDao
 import com.movieapp.data.datasource.local.dao.ResumeMovieDetail
 import com.movieapp.data.datasource.remote.MovieSourceManager
@@ -34,11 +40,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MovieDetailViewModel
+@UnstableApi
 @Inject constructor(
     private val apiRepository: ApiRepository,
     val player: ExoPlayer,
     private val movieSourceManager: MovieSourceManager,
-    private val movieDao: MovieDao
+    private val movieDao: MovieDao,
+    val mediaSession: MediaSession,
+    val notification : PlayerNotificationManager
 ) : ViewModel() {
     private val _state = MutableStateFlow(MovieDetailState())
     val state = _state.asStateFlow()
@@ -49,7 +58,7 @@ class MovieDetailViewModel
         player.playWhenReady = true
         player.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
-                _state.update { it.copy(isPlaying = isPlaying)  }
+                this@MovieDetailViewModel._state.update { it.copy(isPlaying = isPlaying) }
             }
         })
     }
@@ -60,10 +69,10 @@ class MovieDetailViewModel
             movieDao.getResume(
                 _state.value.slug,
                 movieSourceManager.currentSource.value.index
-            )?.let { isResume->
-                _state.update { it.copy(resume = isResume)  }
+            )?.let { isResume ->
+                _state.update { it.copy(resume = isResume) }
             }
-            movieDao.getFav(_state.value.slug)?.let { isFav->
+            movieDao.getFav(_state.value.slug)?.let { isFav ->
                 _state.update { it.copy(isFav = isFav) }
             }
             val result =
@@ -96,11 +105,15 @@ class MovieDetailViewModel
                 .onFailure {
                     setToast(this.message())
                 }
-            if (result.isSuccess){
+            if (result.isSuccess) {
                 delay(350) // for bottom bar animation
                 loadListVideo()
             }
         }
+    }
+
+    fun setRecentlySearch() {
+        _state.update { it.copy(isRecentlySearch = true) }
     }
 
     private fun loadListVideo() {
@@ -108,6 +121,10 @@ class MovieDetailViewModel
             videoItems = it.map { servers ->
                 servers.serverData.map { ep ->
                     MediaItem.Builder().setUri(ep.linkM3u8).setTag(ep.name).setMediaId(ep.name!!)
+                        .setMediaMetadata(
+                            MediaMetadata.Builder().setTitle(ep.filename)
+                                .setDescription(servers.serverName).setArtworkUri(_state.value.movie.movie?.fixImg(movieSourceManager)?.posterUrl?.toUri()).build()
+                        )
                         .setMimeType(MimeTypes.APPLICATION_M3U8).build()
                 }
             }.toMutableStateList()
@@ -139,12 +156,12 @@ class MovieDetailViewModel
     }
 
 
-
     fun addFavMovie() {
         viewModelScope.launch {
             movieDao.insert(
                 _state.value.movie.movie!!.toCustomMovieModel().copy(
                     isFav = !_state.value.isFav,
+                    isRecentlySearch = _state.value.isRecentlySearch,
                     source = movieSourceManager.currentSource.value.index
                 ).fixImg(movieSourceManager)
             )
@@ -162,8 +179,9 @@ class MovieDetailViewModel
                         isResume = true,
                         source = movieSourceManager.currentSource.value.index,
                         isFav = _state.value.isFav,
+                        isRecentlySearch = _state.value.isRecentlySearch,
                         resume = "${_state.value.serverSelected}:${_state.value.epSelected}",
-                        resumePositionMs = if(player.currentPosition-5000> 0) player.currentPosition-5000 else 0 ,
+                        resumePositionMs = if (player.currentPosition - 5000 > 0) player.currentPosition - 5000 else 0,
                         durationMs = player.duration
                     ).fixImg(movieSourceManager)
                 )
@@ -219,6 +237,7 @@ class MovieDetailViewModel
             )
         }
     }
+
     fun setSlug(slug: String) {
         _state.update {
             it.copy(
@@ -227,9 +246,14 @@ class MovieDetailViewModel
         }
     }
 
+    @UnstableApi
     override fun onCleared() {
+
+        notification.setPlayer(null)
+        mediaSession.release()
         pausePlayer()
         player.release()
         super.onCleared()
     }
 }
+

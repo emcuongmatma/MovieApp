@@ -1,5 +1,6 @@
 package com.movieapp.ui.movie_detail
 
+
 import com.movieapp.data.datasource.local.dao.ResumeMovieDetail
 import com.movieapp.data.model.moviedetail.MovieDetailResponseModel
 import com.movieapp.ui.util.LoadStatus
@@ -12,6 +13,7 @@ data class MovieDetailState (
     val slug:String="",
     val isFullScreen:Boolean = false,
     val isPlaying: Boolean = false,
+    val isRecentlySearch: Boolean = false,
     val resume: ResumeMovieDetail = ResumeMovieDetail("",0,0),
     val isFav: Boolean = false
 )

@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -25,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.media3.ui.PlayerView
 import com.movieapp.ui.movie_detail.components.CustomCircularProgress
 import com.movieapp.ui.movie_detail.components.MovieDetails
 import com.movieapp.ui.movie_detail.videoplayer.VideoPlayer
@@ -36,7 +36,8 @@ import com.movieapp.ui.util.LoadStatus
 @Composable
 fun MovieDetailScreen(
     viewModel: MovieDetailViewModel,
-    onExit: () -> Unit
+    onPlayerViewReady: (PlayerView) -> Unit,
+    onPIP: (Boolean) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val modifierCol =
@@ -46,9 +47,6 @@ fun MovieDetailScreen(
             .background(Color.Black)
             .fillMaxSize()
             .statusBarsPadding()
-    val modifierVideoPlayer = if (state.isFullScreen) Modifier.fillMaxSize() else Modifier
-        .fillMaxWidth()
-        .aspectRatio(16 / 9f)
     Column(
         modifier = modifierCol,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -57,32 +55,34 @@ fun MovieDetailScreen(
             is LoadStatus.Loading -> {
                 CustomCircularProgress()
             }
+
             is LoadStatus.Success -> {
                 Box(
-                    modifier = modifierVideoPlayer.background(
-                        Color.Black
-                    )
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            Color.Black
+                        )
                 ) {
                     VideoPlayer(
-                        modifier = modifierVideoPlayer,
                         viewModel = viewModel,
-                        onExit = {
-                            viewModel.pausePlayer()
-                            viewModel.reset()
-                            onExit()
-                        }
+                        onPlayerViewReady = onPlayerViewReady,
+                        onPIP = onPIP
                     )
                 }
                 MovieDetails(
                     state,
                     onSeverSelected = { viewModel.onServerChange(it) },
                     onEpSelected = { viewModel.onEpChange(it) },
-                    addFavMovie = {viewModel.addFavMovie()})
+                    addFavMovie = { viewModel.addFavMovie() })
             }
+
             is LoadStatus.Error -> {
-                Toast.makeText(LocalContext.current, state.status.description,Toast.LENGTH_SHORT).show()
+                Toast.makeText(LocalContext.current, state.status.description, Toast.LENGTH_SHORT)
+                    .show()
                 viewModel.reset()
             }
+
             else -> {
                 Column(
                     modifier = Modifier
@@ -91,13 +91,22 @@ fun MovieDetailScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Icon(imageVector =  Icons.Default.Info,null, tint = netflix_red2, modifier = Modifier.size(50.dp))
-                    Text("Lỗi kết nối !", style = MaterialTheme.typography.bodyLarge.copy(color = netflix_white_15))
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        null,
+                        tint = netflix_red2,
+                        modifier = Modifier.size(50.dp)
+                    )
+                    Text(
+                        "Lỗi kết nối !",
+                        style = MaterialTheme.typography.bodyLarge.copy(color = netflix_white_15)
+                    )
                     TextButton(
-                        colors = ButtonDefaults.textButtonColors().copy(contentColor = netflix_red, containerColor = netflix_white_15),
+                        colors = ButtonDefaults.textButtonColors()
+                            .copy(contentColor = netflix_red, containerColor = netflix_white_15),
                         onClick = {
-                        viewModel.getMovieDetail()
-                    }) {Text("Thử lại") }
+                            viewModel.getMovieDetail()
+                        }) { Text("Thử lại") }
                 }
             }
 
