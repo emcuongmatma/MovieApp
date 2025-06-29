@@ -1,4 +1,4 @@
-@file:Suppress("DEPRECATION")
+
 
 package com.movieapp.ui.movie_fav
 
@@ -18,6 +18,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.movieapp.ui.movie_list.MovieListState
 import com.movieapp.ui.movie_list.components.MovieRow
 
+@Suppress("DEPRECATION")
 @Composable
 fun MovieFavScreen(
     state: MovieListState,
@@ -26,7 +27,7 @@ fun MovieFavScreen(
     onLoadFavMovies:()->Unit
 ) {
     SwipeRefresh(
-        state = rememberSwipeRefreshState(state.isRefreshing),
+        state = rememberSwipeRefreshState(isRefreshing = state.isRefreshing),
         onRefresh = {
             onLoadFavMovies()
         },

@@ -39,15 +39,15 @@ fun CustomMovieResponseModel.toListMovie(movieSourceManager: MovieSourceManager)
 fun CustomMovieModel.fixImg(movieSourceManager: MovieSourceManager): CustomMovieModel {
     val movie = when (movieSourceManager.currentSource.value) {
         is MovieSourceManager.MovieSource.KKPhim -> {
-            this.copy(posterUrl = if (!this.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + this.posterUrl else this.posterUrl)
+            this.copy(posterUrl = if (!this.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.imageURL + this.posterUrl else this.posterUrl)
         }
 
         is MovieSourceManager.MovieSource.Ophim -> {
-            this.copy(posterUrl = if (!this.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + this.thumbUrl else this.thumbUrl)
+            this.copy(posterUrl = if (!this.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.imageURL + this.thumbUrl else this.thumbUrl)
         }
 
         is MovieSourceManager.MovieSource.NguonC -> {
-            this.copy(posterUrl = if (!this.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + this.thumbUrl else this.thumbUrl)
+            this.copy(posterUrl = if (!this.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.imageURL + this.thumbUrl else this.thumbUrl)
         }
     }
     return movie
@@ -55,15 +55,15 @@ fun CustomMovieModel.fixImg(movieSourceManager: MovieSourceManager): CustomMovie
 fun MovieDetailModel.fixImg(movieSourceManager: MovieSourceManager): MovieDetailModel {
     val movie = when (movieSourceManager.currentSource.value) {
         is MovieSourceManager.MovieSource.KKPhim -> {
-            this.copy(posterUrl = if (!this.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + this.posterUrl else this.posterUrl)
+            this.copy(posterUrl = if (!this.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.imageURL + this.posterUrl else this.posterUrl)
         }
 
         is MovieSourceManager.MovieSource.Ophim -> {
-            this.copy(posterUrl = if (!this.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + this.thumbUrl else this.thumbUrl)
+            this.copy(posterUrl = if (!this.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.imageURL + this.thumbUrl else this.thumbUrl)
         }
 
         is MovieSourceManager.MovieSource.NguonC -> {
-            this.copy(posterUrl = if (!this.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.IMAGE_BASE_URL + this.thumbUrl else this.thumbUrl)
+            this.copy(posterUrl = if (!this.posterUrl!!.contains("https")) movieSourceManager.currentSource.value.imageURL + this.thumbUrl else this.thumbUrl)
         }
     }
     return movie

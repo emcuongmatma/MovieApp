@@ -1,8 +1,8 @@
 package com.movieapp.di
 
-import com.movieapp.data.repository.remote.ApiRepositoryImpl
-import com.movieapp.data.repository.remote.ApiRepository
 import com.movieapp.data.datasource.remote.MovieSourceManager
+import com.movieapp.data.repository.remote.ApiRepository
+import com.movieapp.data.repository.remote.ApiRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,7 +27,7 @@ object AppModule {
     ): HttpClient =
         HttpClient(OkHttp.create()) {
             defaultRequest {
-                url(movieSourceManager.currentSource.value.BASE_URL)
+                url(movieSourceManager.currentSource.value.baseURL)
                 header(HttpHeaders.ContentType, "application/json")
             }
             install(ContentNegotiation) {

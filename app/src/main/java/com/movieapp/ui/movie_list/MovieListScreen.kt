@@ -1,4 +1,4 @@
-@file:Suppress("DEPRECATION")
+
 
 package com.movieapp.ui.movie_list
 
@@ -30,6 +30,7 @@ import com.movieapp.R
 import com.movieapp.data.datasource.remote.MovieSourceManager
 import com.movieapp.ui.movie_list.components.MovieRow
 
+@Suppress("DEPRECATION")
 @Composable
 fun MovieListScreen(
     mainState: MovieListState,

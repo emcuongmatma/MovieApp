@@ -42,7 +42,7 @@ class MovieSearchViewModel @Inject constructor(
         viewModelScope.launch {
             _state
                 .map { it.searchKey }
-                .debounce(200)
+                .debounce(300)
                 .distinctUntilChanged()
                 .collectLatest { query ->
                     if (query.isBlank()) {

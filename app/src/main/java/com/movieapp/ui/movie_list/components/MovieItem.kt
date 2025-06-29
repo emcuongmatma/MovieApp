@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.movieapp.ui.movie_list.components
 
 import androidx.compose.foundation.background
@@ -14,6 +12,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -67,9 +66,11 @@ fun MovieItem(
             movie?.let {
                 if (movie.isResume == true) {
                     LinearProgressIndicator(
-                        progress = if (movie.durationMs > 0)
-                            movie.resumePositionMs / movie.durationMs.toFloat()
-                        else 0f,
+                        progress = {
+                            if (movie.durationMs > 0)
+                                movie.resumePositionMs / movie.durationMs.toFloat()
+                            else 0f
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(3.dp)
@@ -77,7 +78,8 @@ fun MovieItem(
                             .align(Alignment.BottomCenter)
                             .background(color = netflix_gray_2),
                         color = netflix_red,
-                        trackColor = netflix_gray_2
+                        trackColor = netflix_gray_2,
+                        strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
                     )
                 }
             }

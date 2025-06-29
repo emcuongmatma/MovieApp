@@ -9,7 +9,6 @@ import android.util.Rational
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -19,12 +18,11 @@ import com.movieapp.ui.HomeScreen
 import com.movieapp.ui.theme.MovieappTheme
 import dagger.hilt.android.AndroidEntryPoint
 
-@Suppress("DEPRECATION")
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private var playerViewRef: PlayerView? = null
 
-    @OptIn(UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
