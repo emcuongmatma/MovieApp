@@ -1,8 +1,7 @@
-@file:Suppress("DEPRECATION")
+
 
 package com.movieapp.ui.movie_detail.videoplayer
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.view.WindowManager
@@ -29,7 +28,7 @@ import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.movieapp.ui.movie_detail.MovieDetailViewModel
 
-@SuppressLint("ObsoleteSdkInt")
+@Suppress("DEPRECATION")
 @OptIn(UnstableApi::class)
 @Composable
 fun VideoPlayer(
