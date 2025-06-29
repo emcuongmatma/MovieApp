@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -165,12 +166,22 @@ fun MovieDetails(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 state = gridState
             ) {
-                items(items = state.movie.episodes[state.serverSelected].serverData, key = {item-> item.name!!}) { item ->
-                    EpItem(
-                        ep = item.name!!,
-                        epSelected = state.epSelected
-                    ) {
-                        onEpSelected(item.name)
+                if (state.movie.episodes[state.serverSelected].serverData[0].name!!.isEmpty()){
+                    item(span = { GridItemSpan(maxLineSpan) }){
+                        Text(
+                            text = "Nội dung vẫn đang cập nhật!",
+                            style = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
+                            textAlign = TextAlign.Justify
+                        )
+                    }
+                }else{
+                    items(items = state.movie.episodes[state.serverSelected].serverData, key = {item-> item.name!!}) { item ->
+                        EpItem(
+                            ep = item.name!!,
+                            epSelected = state.epSelected
+                        ) {
+                            onEpSelected(item.name)
+                        }
                     }
                 }
             }

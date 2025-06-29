@@ -130,11 +130,13 @@ class MovieDetailViewModel
             }.toMutableStateList()
             if (_state.value.resume.resume.isNotEmpty()) {
                 val svEp = _state.value.resume.resume.split(":")
-                _state.update {
-                    it.copy(
-                        serverSelected = svEp[0].toInt(),
-                        epSelected = svEp[1]
-                    )
+                if (svEp[1].isNotEmpty()){
+                    _state.update {
+                        it.copy(
+                            serverSelected = svEp[0].toInt(),
+                            epSelected = svEp[1]
+                        )
+                    }
                 }
             } else {
                 _state.update {
@@ -173,7 +175,7 @@ class MovieDetailViewModel
         player.playWhenReady = false
         player.pause()
         viewModelScope.launch {
-            if (!_state.value.movie.movie?.slug.isNullOrEmpty()) {
+            if (!_state.value.movie.movie?.slug.isNullOrEmpty()&&_state.value.epSelected.isNotEmpty()) {
                 movieDao.insert(
                     _state.value.movie.movie!!.toCustomMovieModel().copy(
                         isResume = true,
@@ -220,7 +222,6 @@ class MovieDetailViewModel
         player.clearMediaItems()
         _state.update {
             it.copy(
-                status = LoadStatus.Init(),
                 movie = MovieDetailResponseModel(null, MovieDetailModel()),
                 serverSelected = 0,
                 isFav = false,
@@ -248,7 +249,6 @@ class MovieDetailViewModel
 
     @UnstableApi
     override fun onCleared() {
-
         notification.setPlayer(null)
         mediaSession.release()
         pausePlayer()

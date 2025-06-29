@@ -1,6 +1,5 @@
 package com.movieapp.ui.movie_detail
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,7 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.media3.ui.PlayerView
 import com.movieapp.ui.movie_detail.components.CustomCircularProgress
@@ -78,12 +76,7 @@ fun MovieDetailScreen(
             }
 
             is LoadStatus.Error -> {
-                Toast.makeText(LocalContext.current, state.status.description, Toast.LENGTH_SHORT)
-                    .show()
                 viewModel.reset()
-            }
-
-            else -> {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -108,6 +101,10 @@ fun MovieDetailScreen(
                             viewModel.getMovieDetail()
                         }) { Text("Thử lại") }
                 }
+
+            }
+            else -> {
+
             }
 
         }
