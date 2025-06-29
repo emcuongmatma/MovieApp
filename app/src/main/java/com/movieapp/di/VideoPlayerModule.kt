@@ -79,7 +79,7 @@ object VideoPlayerModule {
                                 .build()
                             val drawable = imageLoader.execute(request).image!!.toBitmap()
                             callback.onBitmap(drawable)
-                        }catch (e: Exception){
+                        }catch (_: Exception){
                         }
                     }
                     return BitmapFactory.decodeResource(context.resources, R.drawable.app_icon)
