@@ -1,5 +1,6 @@
 package com.movieapp.ui
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -46,6 +47,7 @@ import com.movieapp.ui.util.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@SuppressLint("ConfigurationScreenWidthHeight")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
