@@ -88,6 +88,13 @@ fun VideoPlayer(
                 }
                 it.setShowNextButton(false)
                 it.setShowPreviousButton(false)
+                if (activity?.isInPictureInPictureMode == true){
+                    it.hideController()
+                    it.useController = false
+                }else{
+                    it.useController = true
+                    it.showController()
+                }
                 it.controllerShowTimeoutMs = 3000
             }
         },
