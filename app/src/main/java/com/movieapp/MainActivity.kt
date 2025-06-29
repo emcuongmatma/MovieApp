@@ -2,7 +2,6 @@ package com.movieapp
 
 import android.app.PictureInPictureParams
 import android.app.PictureInPictureUiState
-import android.content.res.Configuration
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
@@ -59,16 +58,6 @@ class MainActivity : ComponentActivity() {
         if (pipState.isTransitioningToPip) playerViewRef!!.hideController()
     }
 
-    @UnstableApi
-    override fun onPictureInPictureModeChanged(
-        isInPictureInPictureMode: Boolean,
-        newConfig: Configuration
-    ) {
-        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
-        if (isInPictureInPictureMode && (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM)) {
-            playerViewRef!!.hideController()
-        }
-    }
 
     @RequiresApi(Build.VERSION_CODES.S)
     private fun setupPipParams() {
