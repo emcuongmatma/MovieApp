@@ -7,11 +7,11 @@ import javax.inject.Inject
 class LocalRepositoryImpl @Inject constructor(
     private val movieDao: MovieDao
 ): LocalRepository {
-    override suspend fun favMovies(): List<CustomMovieModel?> {
+    override suspend fun favMovies(): List<CustomMovieModel> {
         return movieDao.getAllFavMovie()
     }
 
-    override suspend fun reMovies(): List<CustomMovieModel?> {
+    override suspend fun reMovies(): List<CustomMovieModel> {
         return movieDao.getAllResMovie()
     }
 

@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.movieapp.data.model.custom.CustomMovieModel
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MovieDao {
@@ -13,13 +14,13 @@ interface MovieDao {
     suspend fun insert(movieDetail: CustomMovieModel)
 
     @Query("Select * From movies Where isFav = 1")
-    suspend fun getAllFavMovie():List<CustomMovieModel>
+    fun getAllFavMovie(): List<CustomMovieModel>
 
     @Query("Select * From movies Where isResume = 1")
-    suspend fun getAllResMovie():List<CustomMovieModel>
+    fun getAllResMovie():List<CustomMovieModel>
 
     @Query("Select * From movies Where isRecentlySearch = 1")
-    suspend fun getRecentlySearch():List<CustomMovieModel>
+    fun getRecentlySearch():Flow<List<CustomMovieModel>>
 
     @Query("Select resume,resumePositionMs,durationMs From movies Where slug = :slug AND source = :source ")
     suspend fun getResume(slug:String,source:Int): ResumeMovieDetail?
@@ -44,4 +45,6 @@ interface MovieDao {
 
     @Query("UPDATE movies SET isFav = 0 Where isResume = 1 AND isFav = 1")
     suspend fun updateFaR()
+
+
 }
