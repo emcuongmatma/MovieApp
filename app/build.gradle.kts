@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.0"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.2.0"
     id("com.google.dagger.hilt.android")
 }
 
@@ -83,7 +83,12 @@ dependencies {
     //room
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
+    //noinspection UseTomlInstead
+    implementation("androidx.room:room-paging:2.7.2")
     implementation(libs.accompanist.swiperefresh)
+
+    //paging3
+    implementation(libs.androidx.paging.compose)
 
 
     implementation(libs.jetbrains.kotlinx.serialization.json)
