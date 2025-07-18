@@ -1,22 +1,27 @@
 package com.movieapp.ui.movie_list
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.movieapp.data.datasource.local.dao.MovieDao
+import com.movieapp.data.datasource.paging.PagingSource
 import com.movieapp.data.datasource.remote.MovieSourceManager
 import com.movieapp.data.model.custom.CustomMovieModel
 import com.movieapp.data.repository.remote.ApiRepository
+import com.movieapp.ui.BaseViewModel
+import com.movieapp.ui.UiEvent
 import com.movieapp.ui.util.LoadStatus
 import com.movieapp.ui.util.Screen
-import com.movieapp.ui.util.toListMovie
-import com.skydoves.sandwich.onError
-import com.skydoves.sandwich.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,12 +32,27 @@ class MovieListViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
     private val movieSourceManager: MovieSourceManager,
     private val movieDao: MovieDao
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(MovieListState())
     val state = _state.asStateFlow()
+    private val _pagingSeriesKR = MutableStateFlow(PagingData.empty<CustomMovieModel>())
+    val pagingSeriesKR = _pagingSeriesKR.asStateFlow()
+
+    private val _pagingSeriesCN = MutableStateFlow(PagingData.empty<CustomMovieModel>())
+    val pagingSeriesCN = _pagingSeriesCN.asStateFlow()
+
+    private val _pagingSeriesUSUK = MutableStateFlow(PagingData.empty<CustomMovieModel>())
+    val pagingSeriesUSUK = _pagingSeriesUSUK.asStateFlow()
+
+    private val _pagingMovies = MutableStateFlow(PagingData.empty<CustomMovieModel>())
+    val pagingMovies = _pagingMovies.asStateFlow()
+
+    private val _pagingTVS = MutableStateFlow(PagingData.empty<CustomMovieModel>())
+    val pagingTVS = _pagingTVS.asStateFlow()
     private var fetchJob: Job? = null
 
     init {
+        fetchAllMovies()
         _state.update { it.copy(status = LoadStatus.Loading()) }
         observeMovieSource()
     }
@@ -56,28 +76,18 @@ class MovieListViewModel @Inject constructor(
         _state.update { it.copy(status = LoadStatus.Loading(), isRefreshing = true) }
         fetchJob = viewModelScope.launch(Dispatchers.IO) {
             try {
-                val fetchPhimBoHQList =
-                    async { getCustomMovie("phim-bo", _state.value.currentPageS, "han-quoc") }
-                val fetchPhimBoTQList =
-                    async { getCustomMovie("phim-bo", _state.value.currentPageS, "trung-quoc") }
-                val fetchPhimBoUSUKList =
-                    async { getCustomMovie("phim-bo", _state.value.currentPageS, "au-my") }
-                val fetchPhimLeList =
-                    async { getCustomMovie("phim-le", _state.value.currentPageF, "") }
-                val fetchTvList =
-                    async { getCustomMovie("tv-shows", _state.value.currentPageT, "") }
-                val phimBoHQList = fetchPhimBoHQList.await()
-                val phimBoTQList = fetchPhimBoTQList.await()
-                val phimBoUSUKList = fetchPhimBoUSUKList.await()
-                val phimLeList = fetchPhimLeList.await()
-                val tvList = fetchTvList.await()
+                val krJob = async { getCustomMovie("phim-bo", "han-quoc").first() }
+                val cnJob = async { getCustomMovie("phim-bo", "trung-quoc").first() }
+                val usukJob = async { getCustomMovie("phim-bo", "au-my").first() }
+                val leJob = async { getCustomMovie("phim-le", "").first() }
+                val tvsJob = async { getCustomMovie("tv-shows", "").first() }
+                _pagingSeriesKR.value = krJob.await()
+                _pagingSeriesCN.value = cnJob.await()
+                _pagingSeriesUSUK.value = usukJob.await()
+                _pagingMovies.value = leJob.await()
+                _pagingTVS.value = tvsJob.await()
                 _state.update {
                     it.copy(
-                        newKRSeriesList = it.newKRSeriesList + phimBoHQList,
-                        newCNSeriesList = it.newCNSeriesList + phimBoTQList,
-                        newUSUKSeriesList = it.newUSUKSeriesList + phimBoUSUKList,
-                        newStandaloneFilmList = it.newStandaloneFilmList + phimLeList,
-                        newTvShowList = it.newTvShowList + tvList,
                         isRefreshing = false,
                         status = LoadStatus.Success()
                     )
@@ -85,15 +95,29 @@ class MovieListViewModel @Inject constructor(
             } catch (e: CancellationException) {
                 println("FetchAllMovies bị huỷ $e")
             } catch (e: Exception) {
+                setToast(e.message.toString())
                 _state.update {
                     it.copy(
-                        status = LoadStatus.Error(
-                            e.message ?: "Lỗi không xác định"
-                        )
+                        isRefreshing = false,
+                        status = LoadStatus.Error(e.message ?: "Lỗi không xác định")
                     )
                 }
             }
         }
+    }
+
+    private fun getCustomMovie(
+        type: String,
+        country: String
+    ): Flow<PagingData<CustomMovieModel>> {
+        return Pager(PagingConfig(pageSize = 24)) {
+            PagingSource(
+                apiRepository = apiRepository,
+                movieSourceManager = movieSourceManager,
+                type,
+                country
+            )
+        }.flow.cachedIn(viewModelScope)
     }
 
     fun loadFavMovies() {
@@ -109,39 +133,6 @@ class MovieListViewModel @Inject constructor(
             }
         }
     }
-
-//    private suspend fun getRecentlyUpdate(currentPage: Int): List<CustomMovieModel> {
-//        var resultList: List<CustomMovieModel> = emptyList()
-//        apiRepository.getRecentlyUpdateMovie(currentPage)
-//            .onSuccess {
-//                resultList =
-//                    data.items.orEmpty()
-//                        .converter(movieSourceManager)
-//            }
-//            .onError {
-//                setToast(this.payload.toString())
-//            }
-//        return resultList
-//    }
-
-    private suspend fun getCustomMovie(
-        type: String,
-        currentPage: Int,
-        country: String
-    ): List<CustomMovieModel> {
-        var resultList: List<CustomMovieModel> = emptyList()
-        apiRepository.getCustomMovie(type, currentPage, country)
-            .onSuccess {
-                resultList = data.toListMovie(
-                    movieSourceManager
-                )
-            }
-            .onError {
-                setToast(this.payload.toString())
-            }
-        return resultList
-    }
-
     fun changeSource(index: Int) {
         when (index) {
             0 -> {
@@ -157,112 +148,12 @@ class MovieListViewModel @Inject constructor(
             }
         }
     }
-
-    fun getMoreResult() {
-        _state.update { it.copy(status = LoadStatus.Loading()) }
-        viewModelScope.launch(Dispatchers.IO) {
-            when (_state.value.typeSlug) {
-//                "phim-moi-cap-nhat" -> {
-//                    _state.update {
-//                        it.copy(
-//                            recentlyUpdateList = it.recentlyUpdateList + getRecentlyUpdate(_state.value.currentPageR + 1),
-//                            currentPageR = _state.value.currentPageR + 1,
-//                            status = LoadStatus.Success()
-//                        )
-//                    }
-//                }
-
-                "phim-bo-tq" -> {
-                    _state.update {
-                        it.copy(
-                            newCNSeriesList = it.newCNSeriesList + getCustomMovie(
-                                "phim-bo",
-                                _state.value.currentPageS + 1,
-                                "trung-quoc"
-                            ),
-                            currentPageS = _state.value.currentPageS + 1,
-                            status = LoadStatus.Success()
-                        )
-                    }
-                }
-
-                "phim-bo-hq" -> {
-                    _state.update {
-                        it.copy(
-                            newKRSeriesList = it.newKRSeriesList + getCustomMovie(
-                                "phim-bo",
-                                _state.value.currentPageS + 1,
-                                "han-quoc"
-                            ),
-                            currentPageS = _state.value.currentPageS + 1,
-                            status = LoadStatus.Success()
-                        )
-                    }
-                }
-
-                "phim-bo-usuk" -> {
-                    _state.update {
-                        it.copy(
-                            newUSUKSeriesList = it.newUSUKSeriesList + getCustomMovie(
-                                "phim-bo",
-                                _state.value.currentPageS + 1,
-                                "au-my"
-                            ),
-                            currentPageS = _state.value.currentPageS + 1,
-                            status = LoadStatus.Success()
-                        )
-                    }
-                }
-
-                "phim-le" -> {
-                    _state.update {
-                        it.copy(
-                            newStandaloneFilmList = it.newStandaloneFilmList + getCustomMovie(
-                                "phim-le",
-                                _state.value.currentPageF + 1,
-                                ""
-                            ),
-                            currentPageF = _state.value.currentPageF + 1,
-                            status = LoadStatus.Success()
-                        )
-                    }
-                }
-
-                "tv-shows" -> {
-                    _state.update {
-                        it.copy(
-                            newTvShowList = it.newTvShowList + getCustomMovie(
-                                "tv-shows",
-                                _state.value.currentPageT + 1,
-                                ""
-                            ),
-                            currentPageT = _state.value.currentPageT + 1,
-                            status = LoadStatus.Success()
-                        )
-                    }
-                }
-
-                else -> {
-                    setToast("Lỗi ${_state.value.typeSlug}")
-                }
-            }
-        }
-    }
-
     private fun clearList() {
-        _state.update {
-            it.copy(
-                newCNSeriesList = emptyList(),
-                newKRSeriesList = emptyList(),
-                newUSUKSeriesList = emptyList(),
-                newStandaloneFilmList = emptyList(),
-                newTvShowList = emptyList(),
-                currentPageS = 1,
-                currentPageR = 1,
-                currentPageF = 1,
-                currentPageT = 1
-            )
-        }
+        _pagingSeriesKR.value = PagingData.empty()
+        _pagingSeriesCN.value = PagingData.empty()
+        _pagingSeriesUSUK.value = PagingData.empty()
+        _pagingMovies.value = PagingData.empty()
+        _pagingTVS.value = PagingData.empty()
     }
 
     fun onClear(string: String) {
@@ -283,7 +174,8 @@ class MovieListViewModel @Inject constructor(
     }
 
 
-    private fun setToast(err: String) {
+    fun setToast(err: String) {
+        sendEvent(UiEvent.ShowToast(err))
         _state.update {
             it.copy(
                 status = LoadStatus.Error(err)
@@ -317,11 +209,5 @@ class MovieListViewModel @Inject constructor(
         _state.update { it.copy(isOpenGridList = boolean) }
     }
 
-    fun reset() {
-        _state.update {
-            it.copy(
-                status = LoadStatus.Init()
-            )
-        }
-    }
+
 }

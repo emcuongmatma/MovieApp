@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,10 +22,15 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import coil3.request.error
+import coil3.request.placeholder
 import com.movieapp.R
 import com.movieapp.data.model.custom.CustomMovieModel
 import com.movieapp.ui.theme.netflix_gray_2
@@ -48,19 +54,23 @@ fun MovieItem(
                 .clip(RoundedCornerShape(8.dp))
         ) {
             AsyncImage(
-                model = if (movie == null) R.drawable.app_icon else movie.posterUrl,
-                placeholder = painterResource(R.drawable.app_icon),
+                model = if (movie!=null) ImageRequest.Builder(LocalContext.current)
+                    .data(movie.posterUrl)
+                    .crossfade(true)
+                    .placeholder(R.drawable.movie_icon_placeholder)
+                    .error(R.drawable.movie_icon_placeholder)
+                    .build() else R.drawable.movie_icon_placeholder,
                 contentDescription = null,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .width(122.dp)
-                    .height(174.dp)
+                    .fillMaxWidth()
+                    .aspectRatio(2f / 3f)
                     .clip(RoundedCornerShape(8.dp))
                     .clickable {
                         movie?.let {
-                            onItemSelected(movie.slug.toString(), movie.source)
+                            onItemSelected(movie.slug, movie.source)
                         }
                     },
-                contentScale = ContentScale.Crop,
                 error = painterResource(R.drawable.app_icon)
             )
             movie?.let {

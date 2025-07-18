@@ -14,13 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.paging.compose.LazyPagingItems
 import com.movieapp.data.model.custom.CustomMovieModel
 import com.movieapp.ui.theme.netflix_gray_2
 
 @Composable
 fun MovieRow(
     text: String,
-    list: List<CustomMovieModel>,
+    list: LazyPagingItems<CustomMovieModel>,
     onItemSelected: (String, Int?) -> Unit,
     onMoreClicked: () -> Unit
 ) {
@@ -54,7 +55,7 @@ fun MovieRow(
             .padding(top = 10.dp),
         horizontalArrangement = Arrangement.spacedBy(5.dp)
     ) {
-        if (list.isEmpty()) {
+        if (list.itemCount == 0) {
             if (text != "Tiếp tục xem" && text != "Yêu thích") {
                 items(count = 10) {
                     MovieItem(movie = null, onItemSelected = { slug, source -> })
@@ -71,12 +72,13 @@ fun MovieRow(
                 }
             }
         } else {
-            items(count = if (list.size > 10) 10 else list.size , key = {index-> list[index].slug}) { index ->
+            items(
+                count = if (list.itemCount > 10) 10 else list.itemCount,
+                key = { index -> list[index]!!.slug }) { index ->
                 MovieItem(
                     movie = list[index],
                     onItemSelected = { slug, source -> onItemSelected(slug, source) })
             }
         }
-
     }
 }

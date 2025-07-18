@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -28,6 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.movieapp.data.model.custom.CustomMovieModel
 import com.movieapp.ui.movie_detail.components.CustomCircularProgress
 import com.movieapp.ui.movie_list.components.MovieItem
@@ -35,6 +36,7 @@ import com.movieapp.ui.util.LoadStatus
 
 @Composable
 fun MovieListByType(
+    viewModel: MovieListViewModel,
     onExit: () -> Unit,
     state: MovieListState,
     onItemClicked: (String) -> Unit,
@@ -44,44 +46,40 @@ fun MovieListByType(
     BackHandler {
         onExit()
     }
-    val title: String = when (state.typeSlug) {
-        "phim-bo-hq" -> "Phim Hàn Quốc mới"
-        "phim-bo-tq" -> "Phim Trung Quốc mới"
-        "phim-bo-usuk" -> "Phim US-UK mới"
-        "phim-le" -> "Phim lẻ"
-        "tv-shows" -> "Tv Shows"
-        "lich-su" -> "Lịch sử xem"
-        "yeu-thich" -> "Phim yêu thích"
-        else -> ""
-    }
-    val list: List<CustomMovieModel> = when (state.typeSlug) {
-
+    var title = ""
+    var list: LazyPagingItems<CustomMovieModel>? = null
+    when (state.typeSlug) {
         "phim-bo-hq" -> {
-            state.newKRSeriesList
+            list = viewModel.pagingSeriesKR.collectAsLazyPagingItems()
+            title = "Phim Hàn Quốc mới"
         }
 
         "phim-bo-tq" -> {
-            state.newCNSeriesList
+            list = viewModel.pagingSeriesCN.collectAsLazyPagingItems()
+            title = "Phim Trung Quốc mới"
         }
 
         "phim-bo-usuk" -> {
-            state.newUSUKSeriesList
+            list = viewModel.pagingSeriesUSUK.collectAsLazyPagingItems()
+            title = "Phim US-UK mới"
         }
 
         "phim-le" -> {
-            state.newStandaloneFilmList
+            list = viewModel.pagingMovies.collectAsLazyPagingItems()
+            title = "Phim lẻ"
         }
 
         "tv-shows" -> {
-            state.newTvShowList
+            list = viewModel.pagingTVS.collectAsLazyPagingItems()
+            title = "Tv Shows"
         }
 
         "lich-su" -> {
-            state.resMovieList
+            title = "Lịch sử xem"
         }
 
         "yeu-thich" -> {
-            state.favMovieList
+            title = "Phim yêu thích"
         }
 
         else -> {
@@ -120,9 +118,19 @@ fun MovieListByType(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            items(items = list) {
+            items(
+                count = when (state.typeSlug) {
+                    "lich-su" -> state.resMovieList.size
+                    "yeu-thich" -> state.favMovieList.size
+                    else -> list!!.itemCount
+                }
+            ) {
                 MovieItem(
-                    movie = it,
+                    movie =  when (state.typeSlug) {
+                        "lich-su" -> state.resMovieList[it]
+                        "yeu-thich" -> state.favMovieList[it]
+                        else -> list!![it]
+                    },
                     onItemSelected = { slug, source ->
                         onItemClicked(slug)
                     }
@@ -136,7 +144,7 @@ fun MovieListByType(
                     else -> {
                         Button(
                             onClick = {
-                                when (state.typeSlug.toString()){
+                                when (state.typeSlug) {
                                     "lich-su" -> onClear("r")
                                     "yeu-thich" -> onClear("f")
                                     else -> onMoreResult()
@@ -148,7 +156,7 @@ fun MovieListByType(
                             shape = RoundedCornerShape(5.dp)
                         ) {
                             Text(
-                                text =  when (state.typeSlug.toString()){
+                                text = when (state.typeSlug) {
                                     "lich-su" -> "Xoá lịch sử xem"
                                     "yeu-thich" -> "Xoá danh sách yêu thích"
                                     else -> "Hiển thị thêm kết quả"
