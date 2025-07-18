@@ -28,7 +28,7 @@ fun EpItem(ep: String, epSelected: String, onItemSelected: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = if (ep.contains(Regex("\\d"))) ep.split(" ").last().toString() else ep,
+            text = if (ep.contains(Regex("\\d"))) ep.split(" ").last() else ep,
             style = MaterialTheme.typography.titleSmall,
             color = if (ep == epSelected) netflix_red2 else Color.White,
             textDecoration = if (ep == epSelected) TextDecoration.Underline else TextDecoration.None
