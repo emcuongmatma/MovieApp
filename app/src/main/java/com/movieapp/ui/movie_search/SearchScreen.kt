@@ -29,7 +29,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.movieapp.ui.movie_search.components.movieSearchInit
 import com.movieapp.ui.movie_search.components.movieSearchResult
 import com.movieapp.ui.theme.netflix_gray_2
@@ -39,10 +39,11 @@ import com.movieapp.ui.util.LoadStatus
 
 @Composable
 fun MovieSearchScreen(
-    viewModel: MovieSearchViewModel = hiltViewModel(),
+    viewModel: MovieSearchViewModel,
     onItemClicked: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    val movies = viewModel.pagingFLow.collectAsLazyPagingItems()
     val focusManager = LocalFocusManager.current
     Column(
         modifier = Modifier
@@ -101,20 +102,25 @@ fun MovieSearchScreen(
             when (state.status) {
                 is LoadStatus.Init -> {
                     movieSearchInit(
-                        state = state,
+                        recentlySearchList = state.recentlySearch,
                         onItemClicked = {
                             focusManager.clearFocus()
                             onItemClicked(it)
                         }
                     )
                 }
+
+                is LoadStatus.Error -> {
+                }
+
                 else -> {
                     movieSearchResult(
-                        state = state,
-                        onMoreResult = {
-                            viewModel.onMoreResult()
+                        searchKey = state.searchKey,
+                        movies = movies,
+                        setError = { err ->
+                            viewModel.setToast(err.message.toString())
                         },
-                        onItemSelected = { movie,slug->
+                        onItemSelected = { movie, slug ->
                             focusManager.clearFocus()
                             viewModel.addSearchHistory(movie)
                             onItemClicked(slug)

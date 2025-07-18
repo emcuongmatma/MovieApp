@@ -4,7 +4,6 @@ package com.movieapp.ui.movie_detail
 
 import androidx.compose.runtime.toMutableStateList
 import androidx.core.net.toUri
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -22,6 +21,8 @@ import com.movieapp.data.model.moviedetail.MovieDetailResponseModel
 import com.movieapp.data.model.moviedetail.toCustomMovieModel
 import com.movieapp.data.model.nCModel.toMovieDetailResponseModel
 import com.movieapp.data.repository.remote.ApiRepository
+import com.movieapp.ui.BaseViewModel
+import com.movieapp.ui.UiEvent
 import com.movieapp.ui.util.LoadStatus
 import com.movieapp.ui.util.fixImg
 import com.skydoves.sandwich.isSuccess
@@ -48,7 +49,7 @@ class MovieDetailViewModel
     private val movieDao: MovieDao,
     val mediaSession: MediaSession,
     val notification : PlayerNotificationManager
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(MovieDetailState())
     val state = _state.asStateFlow()
     private lateinit var videoItems: MutableList<List<MediaItem>>
@@ -131,7 +132,7 @@ class MovieDetailViewModel
             if (_state.value.resume.resume.isNotEmpty()) {
                 val svEp = _state.value.resume.resume.split(":")
                 if (svEp[1].isNotEmpty()){
-                    _state.update {
+                    _state.update { it ->
                         it.copy(
                             serverSelected = svEp[0].toInt(),
                             epSelected = svEp[1]
@@ -139,7 +140,7 @@ class MovieDetailViewModel
                     }
                 }
             } else {
-                _state.update {
+                _state.update { it ->
                     it.copy(
                         epSelected = videoItems[0].first().mediaId
                     )
@@ -211,6 +212,7 @@ class MovieDetailViewModel
     }
 
     fun setToast(err: String) {
+        sendEvent(UiEvent.ShowToast(err))
         _state.update {
             it.copy(
                 status = LoadStatus.Error(err)

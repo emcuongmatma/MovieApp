@@ -19,6 +19,7 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -42,7 +43,7 @@ import com.movieapp.ui.movie_list.MovieListViewModel
 import com.movieapp.ui.movie_list.components.BottomNavigation
 import com.movieapp.ui.movie_list.components.SourceManagerDialog
 import com.movieapp.ui.movie_search.MovieSearchScreen
-import com.movieapp.ui.util.LoadStatus
+import com.movieapp.ui.movie_search.MovieSearchViewModel
 import com.movieapp.ui.util.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -56,10 +57,12 @@ fun HomeScreen(
     onPIP: (Boolean) -> Unit
 ) {
     val systemUiController = rememberSystemUiController()
+    val context = LocalContext.current
     SideEffect {
         systemUiController.setStatusBarColor(Color.Transparent, darkIcons = false)
     }
     val movieDetailViewModel = hiltViewModel<MovieDetailViewModel>()
+    val movieSearchViewModel = hiltViewModel<MovieSearchViewModel>()
     val mainState by mainViewModel.state.collectAsStateWithLifecycle()
     val bottomSheetState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberStandardBottomSheetState(
@@ -102,6 +105,7 @@ fun HomeScreen(
             when (mainState.screen) {
                 Screen.HomeScreen -> {
                     MovieListScreen(
+                        viewModel = mainViewModel,
                         mainState = mainState,
                         onItemSelected = {
                             onItemSelected(scope, bottomSheetState, movieDetailViewModel, it)
@@ -120,6 +124,7 @@ fun HomeScreen(
 
                 Screen.SearchScreen -> {
                     MovieSearchScreen(
+                        viewModel = movieSearchViewModel,
                         onItemClicked = {
                             movieDetailViewModel.setRecentlySearch()
                             onItemSelected(scope, bottomSheetState, movieDetailViewModel, it)
@@ -131,7 +136,7 @@ fun HomeScreen(
                     MovieFavScreen(
                         state = mainState,
                         onItemSelected = { slug, source ->
-                            mainViewModel.changeSource(source!!.toInt())
+                            mainViewModel.changeSource(source!!)
                             onItemSelected(scope, bottomSheetState, movieDetailViewModel, slug)
                         },
                         onMoreClicked = { slug ->
@@ -161,22 +166,33 @@ fun HomeScreen(
                 ) + fadeOut(targetAlpha = 1f)
             ) {
                 MovieListByType(
+                    viewModel = mainViewModel,
                     state = mainState,
                     onExit = { mainViewModel.isGridListOpen(false) },
                     onItemClicked = {
                         onItemSelected(scope, bottomSheetState, movieDetailViewModel, it)
                     },
-                    onMoreResult = { mainViewModel.getMoreResult() },
+                    onMoreResult = {  },
                     onClear = {
                         mainViewModel.onClear(it)
                     })
             }
         }
     }
-    if (mainState.status is LoadStatus.Error) {
-        Toast.makeText(LocalContext.current, "Lỗi kết nối !", Toast.LENGTH_SHORT).show()
-        mainViewModel.reset()
+    LaunchedEffect(Unit) {
+        listOf(movieSearchViewModel,movieDetailViewModel,mainViewModel).forEach { vm ->
+            launch {
+                vm.eventFlow.collect { event ->
+                    when (event) {
+                        is UiEvent.ShowToast -> {
+                            Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+        }
     }
+
     if (mainState.isSourceManagerOpen) {
         SourceManagerDialog(
             onDismissRequest = { mainViewModel.setSourceManagerOpen(false) },
