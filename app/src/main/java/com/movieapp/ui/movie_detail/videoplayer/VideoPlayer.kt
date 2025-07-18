@@ -1,4 +1,4 @@
-
+@file:Suppress("DEPRECATION")
 
 package com.movieapp.ui.movie_detail.videoplayer
 
@@ -28,13 +28,13 @@ import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.movieapp.ui.movie_detail.MovieDetailViewModel
 
-@Suppress("DEPRECATION")
+
 @OptIn(UnstableApi::class)
 @Composable
 fun VideoPlayer(
     viewModel: MovieDetailViewModel,
     onPlayerViewReady: (PlayerView) -> Unit,
-    onPIP:(Boolean)->Unit
+    onPIP: (Boolean) -> Unit
 ) {
     var lifecycle by remember {
         mutableStateOf(Lifecycle.Event.ON_CREATE)
@@ -44,9 +44,13 @@ fun VideoPlayer(
     val activity = context as? Activity
     val window = activity?.window
     val state by viewModel.state.collectAsState()
-    LaunchedEffect(state.isPlaying,state.isFullScreen) {
-        if (state.isFullScreen) window?.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        else window?.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+    LaunchedEffect(state.isPlaying, state.isFullScreen) {
+        if (state.isFullScreen) {
+            window?.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        } else {
+            window?.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        }
+
         if (state.isPlaying) {
             onPIP(true)
             window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -68,14 +72,15 @@ fun VideoPlayer(
     BackHandler(
         enabled = state.isFullScreen
     ) {
+        viewModel.isFullScreen(false)
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
     }
     AndroidView(
         factory = {
-            PlayerView(it).also {
+            PlayerView(it).also { it ->
                 it.player = viewModel.player
-                it.setFullscreenButtonState(state.isFullScreen)
                 it.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
+                it.setFullscreenButtonState(state.isFullScreen)
                 it.setFullscreenButtonClickListener {
                     activity?.requestedOrientation = if (state.isFullScreen) {
                         viewModel.isFullScreen(false)
@@ -87,36 +92,38 @@ fun VideoPlayer(
                 }
                 it.setShowNextButton(false)
                 it.setShowPreviousButton(false)
-                if (activity?.isInPictureInPictureMode == true){
-                    it.hideController()
-                    it.useController = false
-                }else{
-                    it.useController = true
-                    it.showController()
-                }
                 it.controllerShowTimeoutMs = 3000
             }
         },
-        update = {
+        update = { playerView ->
+            if (activity?.isInPictureInPictureMode == true) {
+                playerView.hideController()
+                playerView.useController = false
+            } else {
+                playerView.useController = true
+                playerView.showController()
+            }
             when (lifecycle) {
                 Lifecycle.Event.ON_PAUSE -> {
-                    it.onPause()
+                    playerView.onPause()
                 }
 
                 Lifecycle.Event.ON_RESUME -> {
-                    it.onResume()
-                    onPlayerViewReady(it)
+                    playerView.onResume()
+                    onPlayerViewReady(playerView)
                 }
 
                 Lifecycle.Event.ON_STOP -> {
                     viewModel.pausePlayer()
-                    onPlayerViewReady(it)
+                    onPlayerViewReady(playerView)
                 }
 
                 else -> Unit
             }
         },
-        modifier = if (state.isFullScreen) Modifier.fillMaxWidth() else  Modifier.fillMaxWidth().aspectRatio(16/9f)
+        modifier = if (state.isFullScreen) Modifier.fillMaxWidth() else Modifier
+            .fillMaxWidth()
+            .aspectRatio(16 / 9f)
     )
 
 }
