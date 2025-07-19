@@ -8,6 +8,7 @@ import android.view.WindowManager
 import androidx.activity.compose.BackHandler
 import androidx.annotation.OptIn
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -121,7 +122,7 @@ fun VideoPlayer(
                 else -> Unit
             }
         },
-        modifier = if (state.isFullScreen) Modifier.fillMaxWidth() else Modifier
+        modifier = if (state.isFullScreen) Modifier.fillMaxSize() else Modifier
             .fillMaxWidth()
             .aspectRatio(16 / 9f)
     )
