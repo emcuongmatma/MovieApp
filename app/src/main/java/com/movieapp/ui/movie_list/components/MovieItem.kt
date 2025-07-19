@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.request.error
@@ -57,6 +58,7 @@ fun MovieItem(
                 model = if (movie!=null) ImageRequest.Builder(LocalContext.current)
                     .data(movie.posterUrl)
                     .crossfade(true)
+                    .diskCachePolicy(CachePolicy.DISABLED)
                     .placeholder(R.drawable.movie_icon_placeholder)
                     .error(R.drawable.movie_icon_placeholder)
                     .build() else R.drawable.movie_icon_placeholder,
