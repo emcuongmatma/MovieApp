@@ -53,7 +53,7 @@ fun MovieListScreen(
     val tvs = viewModel.pagingTVS.collectAsLazyPagingItems()
     LaunchedEffect(seriesKR.loadState) {
         if (seriesKR.loadState.refresh is LoadState.Error) {
-            viewModel.setToast((seriesKR.loadState.refresh as LoadState.Error).error.toString())
+            viewModel.setToast("Không thể kết nối tới API hãy thử kết nối lại mạng hoặc sử dụng VPN!")
         }
     }
     Column(
