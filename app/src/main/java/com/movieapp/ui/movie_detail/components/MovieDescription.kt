@@ -11,11 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
@@ -47,8 +50,9 @@ import com.movieapp.ui.util.convertContent
 fun MovieDetails(
     state: MovieDetailState,
     onSeverSelected: (Int) -> Unit,
+    onEpRangeSelected: (Int) -> Unit,
     onEpSelected: (String) -> Unit,
-    addFavMovie:()->Unit
+    addFavMovie: () -> Unit
 ) {
     var isShowFull by remember {
         mutableStateOf(false)
@@ -59,7 +63,7 @@ fun MovieDetails(
             .background(netflix_black)
             .fillMaxSize()
             .padding(10.dp),
-        verticalArrangement = Arrangement.spacedBy(5.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Text(
             text = state.movie.movie?.name.toString(),
@@ -94,10 +98,15 @@ fun MovieDetails(
             )
             Box(
                 modifier = Modifier
-                    .background(color = netflix_white_15),
+                    .background(
+                        color = netflix_white_15,
+                        shape = RoundedCornerShape(5.dp)
+                    )
+                    .wrapContentWidth(),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
+                    modifier = Modifier.padding(5.dp),
                     text = state.movie.movie?.episodeCurrent.toString(),
                     style = MaterialTheme.typography.bodyMedium.copy(color = netflix_red),
                     maxLines = 1
@@ -160,22 +169,57 @@ fun MovieDetails(
                 }
             }
             LazyVerticalGrid(
-                modifier = Modifier.fillMaxWidth(),
-                columns = GridCells.Fixed(9),
+                modifier = Modifier
+                    .fillMaxWidth(),
+                columns = GridCells.Fixed(7),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 state = gridState
             ) {
-                if (state.movie.episodes[state.serverSelected].serverData[0].name!!.isEmpty()){
-                    item(span = { GridItemSpan(maxLineSpan) }){
+                val serverData = state.movie.episodes[state.serverSelected].serverData
+                if (serverData[0].name!!.isEmpty()) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
                         Text(
                             text = "Nội dung vẫn đang cập nhật!",
                             style = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
                             textAlign = TextAlign.Justify
                         )
                     }
-                }else{
-                    items(items = state.movie.episodes[state.serverSelected].serverData, key = {item-> item.name!!}) { item ->
+                } else if (serverData.size < 50) {
+                    items(
+                        items = serverData,
+                        key = { item -> item.name ?: item.hashCode() }) { item ->
+                        EpItem(
+                            ep = item.name!!,
+                            epSelected = state.epSelected
+                        ) {
+                            onEpSelected(item.name)
+                        }
+                    }
+                } else {
+                    val chunkedList = serverData.chunked(50)
+                    stickyHeader {
+                        LazyRow(
+                            modifier = Modifier
+                                .background(netflix_black)
+                                .fillMaxWidth()
+                                .padding(bottom = 10.dp),
+                            horizontalArrangement = Arrangement.spacedBy(15.dp)
+                        ) {
+                            items(count = chunkedList.size, key = { it -> it }) { index ->
+                                ServerItem(
+                                    name = "${(index + 1) * 50 - 49}-${(index + 1) * 50} ",
+                                    index = (index + 1),
+                                    serverSelected = state.epRangeSelected
+                                ) {
+                                    onEpRangeSelected(it)
+                                }
+                            }
+                        }
+                    }
+                    items(
+                        items = chunkedList[state.epRangeSelected - 1],
+                        key = { item -> item.name ?: item.hashCode() }) { item ->
                         EpItem(
                             ep = item.name!!,
                             epSelected = state.epSelected

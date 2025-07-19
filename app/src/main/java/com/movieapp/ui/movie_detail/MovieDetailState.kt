@@ -9,6 +9,7 @@ data class MovieDetailState (
     val movie: MovieDetailResponseModel = MovieDetailResponseModel(),
     val serverSelected:Int =0,
     val epSelected:String="",
+    val epRangeSelected:Int=1,
     val status: LoadStatus = LoadStatus.Loading(),
     val slug:String="",
     val isFullScreen:Boolean = false,

@@ -76,6 +76,7 @@ fun MovieDetailScreen(
                     state,
                     onSeverSelected = { viewModel.onServerChange(it) },
                     onEpSelected = { viewModel.onEpChange(it) },
+                    onEpRangeSelected = {viewModel.onEpRangeSelected(it)},
                     addFavMovie = { viewModel.addFavMovie() })
             }
 

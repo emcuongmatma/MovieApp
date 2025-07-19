@@ -135,7 +135,8 @@ class MovieDetailViewModel
                     _state.update { it ->
                         it.copy(
                             serverSelected = svEp[0].toInt(),
-                            epSelected = svEp[1]
+                            epRangeSelected = svEp[1].toInt(),
+                            epSelected = svEp[2]
                         )
                     }
                 }
@@ -183,7 +184,7 @@ class MovieDetailViewModel
                         source = movieSourceManager.currentSource.value.index,
                         isFav = _state.value.isFav,
                         isRecentlySearch = _state.value.isRecentlySearch,
-                        resume = "${_state.value.serverSelected}:${_state.value.epSelected}",
+                        resume = "${_state.value.serverSelected}:${_state.value.epRangeSelected}:${_state.value.epSelected}",
                         resumePositionMs = if (player.currentPosition - 5000 > 0) player.currentPosition - 5000 else 0,
                         durationMs = player.duration
                     ).fixImg(movieSourceManager)
@@ -201,6 +202,13 @@ class MovieDetailViewModel
         playVideo(false)
     }
 
+    fun onEpRangeSelected(int:Int){
+        _state.update {
+            it.copy(
+                epRangeSelected = int
+            )
+        }
+    }
     fun onServerChange(int: Int) {
         _state.update {
             it.copy(
@@ -226,6 +234,7 @@ class MovieDetailViewModel
             it.copy(
                 movie = MovieDetailResponseModel(null, MovieDetailModel()),
                 serverSelected = 0,
+                epRangeSelected = 1,
                 isFav = false,
                 resume = ResumeMovieDetail("", 0, 0),
                 slug = ""

@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,8 +28,11 @@ fun EpItem(ep: String, epSelected: String, onItemSelected: () -> Unit) {
             },
         contentAlignment = Alignment.Center
     ) {
+        val displayText = remember(ep) {
+            if (ep.contains(Regex("\\d"))) ep.split(" ").last() else ep
+        }
         Text(
-            text = if (ep.contains(Regex("\\d"))) ep.split(" ").last() else ep,
+            text = displayText,
             style = MaterialTheme.typography.titleSmall,
             color = if (ep == epSelected) netflix_red2 else Color.White,
             textDecoration = if (ep == epSelected) TextDecoration.Underline else TextDecoration.None
