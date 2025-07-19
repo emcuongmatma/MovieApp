@@ -21,6 +21,7 @@ class MovieSourceManager {
         abstract val searchHead: String
         abstract val searchTail: String
         abstract val imageURL:String
+        abstract val itemPerPage:Int
         data object KKPhim : MovieSource() {
             override val index = 0
             override val baseURL = "https://phimapi.com/"
@@ -30,6 +31,7 @@ class MovieSourceManager {
             override val searchHead = "/v1/api/tim-kiem?keyword="
             override val searchTail = "&sort_field=year"
             override val imageURL = "https://phimimg.com/"
+            override val itemPerPage = 10
         }
         data object Ophim : MovieSource() {
             override val index = 1
@@ -40,6 +42,7 @@ class MovieSourceManager {
             override val searchHead = "/v1/api/tim-kiem?keyword="
             override val searchTail = "&sort_field=year"
             override val imageURL = "https://img.ophim.live/uploads/movies/"
+            override val itemPerPage = 24
         }
         data object NguonC : MovieSource() {
             override val index = 2
@@ -50,6 +53,7 @@ class MovieSourceManager {
             override val searchHead = "films/search?keyword="
             override val searchTail = "&sort_field=year"
             override val imageURL = ""
+            override val itemPerPage = 10
         }
     }
 }

@@ -110,7 +110,7 @@ class MovieListViewModel @Inject constructor(
         type: String,
         country: String
     ): Flow<PagingData<CustomMovieModel>> {
-        return Pager(PagingConfig(pageSize = 24)) {
+        return Pager(PagingConfig(pageSize = movieSourceManager.currentSource.value.itemPerPage)) {
             PagingSource(
                 apiRepository = apiRepository,
                 movieSourceManager = movieSourceManager,
