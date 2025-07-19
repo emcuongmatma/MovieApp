@@ -42,7 +42,7 @@ fun SourceManagerDialog(onDismissRequest: () -> Unit, onSource: (Int) -> Unit) {
                 fontWeight = FontWeight.Bold
             )
             Image(
-                painter = painterResource(R.drawable.movie_background_horizontal),
+                painter = painterResource(R.drawable.logokkphim),
                 contentDescription = null,
                 modifier = Modifier
                     .size(180.dp)

@@ -42,7 +42,7 @@ fun MovieListScreen(
     onRefresh: () -> Unit
 ) {
     val painterSource = when (mainState.movieSource) {
-        MovieSourceManager.MovieSource.KKPhim -> R.drawable.movie_background_horizontal
+        MovieSourceManager.MovieSource.KKPhim -> R.drawable.logokkphim
         MovieSourceManager.MovieSource.NguonC -> R.drawable.logonc
         else -> R.drawable.logoophim
     }
