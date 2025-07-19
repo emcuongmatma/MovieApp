@@ -11,13 +11,13 @@ Movie Streaming android app built with Jetpack Compose, Hilt, Coroutines, Flow, 
 
 
 <p align="center">
-  <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_2025-07-19-12-09-16-02.jpg" />
- <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_2025-07-19-12-09-19-19.jpg" />
-  <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_2025-07-19-12-09-29-02.jpg" />
-  <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_2025-07-19-12-09-42-94.jpg" />
-  <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_2025-07-19-12-10-13-49.jpg" />
-  <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_2025-07-19-12-10-20-06.jpg" />
-  <img width="30%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_2025-07-19-12-10-40-52.jpg" />
+  <img width="25%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_2025-07-19-12-09-16-02.jpg" />
+ <img width="25%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_2025-07-19-12-09-19-19.jpg" />
+  <img width="25%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_2025-07-19-12-09-29-02.jpg" />
+  <img width="25%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_2025-07-19-12-09-42-94.jpg" />
+  <img width="25%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_2025-07-19-12-10-13-49.jpg" />
+  <img width="25%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_2025-07-19-12-10-20-06.jpg" />
+  <img width="25%" height="50%" src="https://github.com/emcuongmatma/MovieApp/blob/main/screenshots/Screenshot_2025-07-19-12-10-40-52.jpg" />
 </p>
 
 <p align="center" width="100%">
