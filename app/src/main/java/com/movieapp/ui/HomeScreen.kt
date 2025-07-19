@@ -11,7 +11,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -99,7 +99,7 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = Color.Black)
-                .navigationBarsPadding(),
+                .statusBarsPadding(),
             contentAlignment = Alignment.BottomCenter
         ) {
             when (mainState.screen) {

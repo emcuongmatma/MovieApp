@@ -45,6 +45,14 @@ fun MovieDetailScreen(
             .background(Color.Black)
             .fillMaxSize()
             .statusBarsPadding()
+    val modifierBox =
+        if (state.isFullScreen) Modifier
+            .background(Color.Black)
+            .fillMaxSize() else Modifier
+            .fillMaxWidth()
+            .background(
+                Color.Black
+            )
     Column(
         modifier = modifierCol,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -56,11 +64,7 @@ fun MovieDetailScreen(
 
             is LoadStatus.Success -> {
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            Color.Black
-                        )
+                    modifier = modifierBox
                 ) {
                     VideoPlayer(
                         viewModel = viewModel,
