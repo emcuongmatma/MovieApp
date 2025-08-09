@@ -30,12 +30,15 @@ import com.skydoves.sandwich.message
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onFailure
 import com.skydoves.sandwich.onSuccess
+import com.skydoves.sandwich.suspendOnSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -79,11 +82,14 @@ class MovieDetailViewModel
             val result =
                 if (movieSourceManager.currentSource.value is MovieSourceManager.MovieSource.NguonC) {
                     apiRepository.getMovieDetailNC(_state.value.slug)
-                        .onSuccess {
+                        .suspendOnSuccess {
+                            val movieDetail = withContext(Dispatchers.Default) {
+                                data.toMovieDetailResponseModel()
+                            }
                             _state.update {
                                 it.copy(
                                     status = LoadStatus.Success(),
-                                    movie = data.toMovieDetailResponseModel(),
+                                    movie = movieDetail,
                                     serverSelected = 0
                                 )
                             }
@@ -161,7 +167,7 @@ class MovieDetailViewModel
 
 
     fun addFavMovie() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             movieDao.insert(
                 _state.value.movie.movie!!.toCustomMovieModel().copy(
                     isFav = !_state.value.isFav,

@@ -9,23 +9,27 @@ import com.movieapp.ui.util.toListMovie
 import com.skydoves.sandwich.message
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onFailure
-import com.skydoves.sandwich.onSuccess
+import com.skydoves.sandwich.suspendOnSuccess
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class SearchPagingSource @Inject constructor(
     private val apiRepository: ApiRepository,
     private val movieSourceManager: MovieSourceManager,
-    private val name:String
-): PagingSource<Int, CustomMovieModel>() {
+    private val name: String
+) : PagingSource<Int, CustomMovieModel>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CustomMovieModel> {
         return try {
             val currentPage = params.key ?: 1
             var result = listOf<CustomMovieModel>()
             apiRepository.getMovieDetailByName(name, currentPage)
-                .onSuccess {
-                    result = data.toListMovie(
-                        movieSourceManager
-                    )
+                .suspendOnSuccess {
+                    result = withContext(Dispatchers.Default) {
+                        data.toListMovie(
+                            movieSourceManager
+                        )
+                    }
                 }
                 .onError {
                     throw Exception(this.payload.toString())
